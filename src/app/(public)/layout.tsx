@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { getSettings } from "@/lib/supabase";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";

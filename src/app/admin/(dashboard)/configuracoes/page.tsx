@@ -128,7 +128,8 @@ export default function AdminConfiguracoesPage() {
     try {
       const { error } = await supabase
         .from('settings')
-        .update({
+        .upsert({
+          id: 1,
           whatsapp,
           email_destino: emailDestino,
           cor_primaria: corPrimaria,
