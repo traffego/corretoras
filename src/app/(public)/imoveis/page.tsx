@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { getSettings, supabase } from '@/lib/supabase';
 import PropertyCard, { Property } from '@/components/PropertyCard';
 import PropertyFilters from '@/components/PropertyFilters';

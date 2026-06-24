@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import Image from 'next/image';
 import Link from 'next/link';
 import { Phone, Mail, Award, CheckCircle2, ShieldCheck } from 'lucide-react';
