@@ -135,7 +135,7 @@ export default function Footer({ settings }: FooterProps) {
             <li className="flex items-start space-x-3">
               <MapPin size={16} className="text-primary mt-0.5 flex-shrink-0" />
               <span className="text-stone-400">
-                Atendimento em Sinop/MT e Região
+                Atendimento na região e condomínios fechados
               </span>
             </li>
           </ul>

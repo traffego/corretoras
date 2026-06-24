@@ -55,7 +55,7 @@ export default function Header({ settings }: HeaderProps) {
             <img
               src={settings.logo_url}
               alt={settings.nome_corretora}
-              className={`h-10 w-auto object-contain ${
+              className={`h-16 w-auto object-contain ${
                 settings.logo_url === '/logo.png' || settings.logo_url.includes('logo.png')
                   ? 'brightness-0'
                   : ''

@@ -121,7 +121,7 @@ export default async function ImovelDetailPage({ params }: ImovelDetailPageProps
               {property.condominio
                 ? `${property.condominio}, ${property.bairro}`
                 : property.bairro}
-              {` - ${property.cidade}/MT`}
+              {` - ${property.cidade}`}
             </span>
           </div>
         </div>

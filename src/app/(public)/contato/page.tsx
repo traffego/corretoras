@@ -94,7 +94,7 @@ export default async function ContatoPage() {
                   Área de Atendimento
                 </span>
                 <span className="text-sm font-semibold text-secondary">
-                  Sinop/MT, condomínios fechados e região metropolitana.
+                  Região e condomínios fechados.
                 </span>
               </div>
             </div>
