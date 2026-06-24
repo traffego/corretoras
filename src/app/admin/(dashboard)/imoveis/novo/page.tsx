@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import PropertyForm from '../PropertyForm';
 
 export const metadata = {

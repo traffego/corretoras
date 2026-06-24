@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { Phone, Mail, Award, Clock, MapPin } from 'lucide-react';
 import { getSettings } from '@/lib/supabase';
 import ContactForm from '@/components/ContactForm';
