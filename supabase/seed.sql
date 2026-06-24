@@ -25,12 +25,12 @@ insert into settings (
   'corretora@exemplo.com',
   '#c5a880', -- Dourado Terroso elegante
   '#1c1917', -- Cinza Pedra escuro
-  'Gabriela Mateos',
+  'Patrícia e Allana (Imóveis Selecionados)',
   'CRECI 12345-F',
-  'Especialista em imóveis de alto padrão e condomínios fechados em Sinop e região.',
-  'Com mais de 10 anos de atuação especializada no mercado de alto padrão, Gabriela Mateos oferece um serviço de consultoria imobiliária personalizado e sob medida. Focada em identificar as melhores oportunidades em condomínios fechados e áreas nobres, Gabriela acompanha seus clientes em todas as etapas da aquisição, garantindo discrição, segurança jurídica e satisfação total.',
+  'Especialistas em imóveis selecionados de alto padrão em Sinop e região.',
+  'Patrícia e Allana são especialistas em intermediação imobiliária de alto padrão, dedicadas a selecionar os melhores imóveis e condomínios fechados. Com foco em atendimento de excelência, transparência e curadoria rigorosa, elas ajudam você a encontrar a propriedade perfeita para seu estilo de vida.',
   'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80', -- Foto de perfil executiva
-  null -- Deixado nulo para renderizar o logo como texto estilizado
+  '/logo.png' -- Logotipo padrão carregado na pasta pública
 );
 
 -- 3. Inserir Imóveis

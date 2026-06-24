@@ -26,12 +26,12 @@ export const FALLBACK_SETTINGS: SystemSettings = {
   email_destino: 'corretora@exemplo.com',
   cor_primaria: '#c5a880', // Champanhe/Dourado Terroso
   cor_secundaria: '#1c1917', // Cinza Escuro/Preto pedra
-  nome_corretora: 'Gabriela Mateos',
+  nome_corretora: 'Patrícia e Allana (Imóveis Selecionados)',
   creci: 'CRECI 12345-F',
-  biografia_curta: 'Especialista em imóveis de alto padrão e condomínios fechados em Sinop e região.',
-  biografia_longa: 'Com mais de 10 anos de atuação especializada no mercado de alto padrão, Gabriela Mateos oferece um serviço de consultoria imobiliária personalizado e sob medida. Focada em identificar as melhores oportunidades em condomínios fechados e áreas nobres, Gabriela acompanha seus clientes em todas as etapas da aquisição, garantindo discrição, segurança jurídica e satisfação total.',
+  biografia_curta: 'Especialistas em imóveis selecionados de alto padrão em Sinop e região.',
+  biografia_longa: 'Patrícia e Allana são especialistas em intermediação imobiliária de alto padrão, dedicadas a selecionar os melhores imóveis e condomínios fechados. Com foco em atendimento de excelência, transparência e curadoria rigorosa, elas ajudam você a encontrar a propriedade perfeita para seu estilo de vida.',
   foto_perfil_url: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80',
-  logo_url: '',
+  logo_url: '/logo.png',
 };
 
 /**
