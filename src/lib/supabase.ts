@@ -18,6 +18,7 @@ export interface SystemSettings {
   biografia_longa: string;
   foto_perfil_url: string;
   logo_url: string;
+  hero_tipo: 'padrao' | 'wide' | 'galeria';
 }
 
 export const FALLBACK_SETTINGS: SystemSettings = {
@@ -32,6 +33,7 @@ export const FALLBACK_SETTINGS: SystemSettings = {
   biografia_longa: 'Patrícia e Allana são especialistas em intermediação imobiliária de alto padrão, dedicadas a selecionar os melhores imóveis e condomínios fechados. Com foco em atendimento de excelência, transparência e curadoria rigorosa, elas ajudam você a encontrar a propriedade perfeita para seu estilo de vida.',
   foto_perfil_url: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80',
   logo_url: '/logo.png',
+  hero_tipo: 'padrao',
 };
 
 /**
@@ -64,6 +66,7 @@ export async function getSettings(): Promise<SystemSettings> {
       biografia_longa: data.biografia_longa || FALLBACK_SETTINGS.biografia_longa,
       foto_perfil_url: data.foto_perfil_url || FALLBACK_SETTINGS.foto_perfil_url,
       logo_url: data.logo_url || FALLBACK_SETTINGS.logo_url,
+      hero_tipo: (data.hero_tipo as SystemSettings['hero_tipo']) || FALLBACK_SETTINGS.hero_tipo,
     };
   } catch (err) {
     console.error('Exceção ao buscar configurações:', err);

@@ -20,6 +20,7 @@ interface Settings {
   biografia_longa: string;
   foto_perfil_url: string;
   logo_url: string;
+  hero_tipo: string;
 }
 
 export default function AdminConfiguracoesPage() {
@@ -40,6 +41,7 @@ export default function AdminConfiguracoesPage() {
   const [biografiaLonga, setBiografiaLonga] = useState('');
   const [fotoPerfilUrl, setFotoPerfilUrl] = useState('');
   const [logoUrl, setLogoUrl] = useState('');
+  const [heroTipo, setHeroTipo] = useState<'padrao' | 'wide' | 'galeria'>('padrao');
 
   const [uploadingFoto, setUploadingFoto] = useState(false);
   const [uploadingLogo, setUploadingLogo] = useState(false);
@@ -66,6 +68,7 @@ export default function AdminConfiguracoesPage() {
           setBiografiaLonga(data.biografia_longa || '');
           setFotoPerfilUrl(data.foto_perfil_url || '');
           setLogoUrl(data.logo_url || '');
+          setHeroTipo((data.hero_tipo as 'padrao' | 'wide' | 'galeria') || 'padrao');
         }
       } catch (err) {
         console.error(err);
@@ -143,6 +146,7 @@ export default function AdminConfiguracoesPage() {
           biografia_longa: biografiaLonga,
           foto_perfil_url: fotoPerfilUrl || null,
           logo_url: logoUrl || null,
+          hero_tipo: heroTipo,
           updated_at: new Date().toISOString(),
         })
         .eq('id', 1);
@@ -412,6 +416,86 @@ export default function AdminConfiguracoesPage() {
               </div>
             </div>
           </div>
+        </div>
+      </div>
+      {/* Seção: Tipo de Hero da Home */}
+      <div className="bg-white border border-stone-200/50 rounded-2xl p-6 sm:p-8 shadow-sm space-y-5">
+        <div className="border-b pb-3 border-stone-100">
+          <h2 className="font-serif text-base font-bold text-secondary">Estilo do Hero (Capa da Home)</h2>
+          <p className="text-xs text-stone-400 mt-1">Escolha o estilo visual da seção principal da página inicial.</p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          {([
+            {
+              value: 'padrao',
+              label: 'Padrão',
+              desc: 'Foto da corretora + texto lateral + busca',
+              preview: (
+                <div className="h-24 rounded-lg bg-gradient-to-r from-[#f5eee6] to-[#faf8f5] flex items-center justify-between px-3 overflow-hidden">
+                  <div className="space-y-1.5 flex-1">
+                    <div className="h-2 w-3/4 bg-stone-300 rounded" />
+                    <div className="h-3 w-full bg-stone-800 rounded" />
+                    <div className="h-2 w-1/2 bg-stone-400 rounded" />
+                  </div>
+                  <div className="w-12 h-16 bg-stone-300 rounded-t-full rounded-b-lg ml-2 flex-shrink-0" />
+                </div>
+              ),
+            },
+            {
+              value: 'wide',
+              label: 'Wide',
+              desc: 'Fundo escuro imersivo + tipografia grande',
+              preview: (
+                <div className="h-24 rounded-lg bg-gradient-to-br from-stone-900 to-stone-800 flex flex-col items-center justify-center px-3 overflow-hidden">
+                  <div className="h-2 w-2/3 bg-[#c5a880] rounded mb-1.5" />
+                  <div className="h-4 w-full bg-white/20 rounded mb-1" />
+                  <div className="h-2 w-1/2 bg-white/10 rounded" />
+                </div>
+              ),
+            },
+            {
+              value: 'galeria',
+              label: 'Galeria',
+              desc: 'Slideshow automático das fotos dos imóveis',
+              preview: (
+                <div className="h-24 rounded-lg bg-gradient-to-br from-stone-700 to-stone-900 flex flex-col items-end justify-between p-2 overflow-hidden relative">
+                  <div className="absolute inset-0 grid grid-cols-3 gap-0.5 opacity-40">
+                    <div className="bg-stone-500" />
+                    <div className="bg-stone-400" />
+                    <div className="bg-stone-600" />
+                  </div>
+                  <div className="relative z-10 flex space-x-1 self-center mt-auto mb-1">
+                    <div className="w-4 h-1.5 rounded-full bg-[#c5a880]" />
+                    <div className="w-1.5 h-1.5 rounded-full bg-white/40" />
+                    <div className="w-1.5 h-1.5 rounded-full bg-white/40" />
+                  </div>
+                </div>
+              ),
+            },
+          ] as const).map((opt) => (
+            <button
+              key={opt.value}
+              type="button"
+              onClick={() => setHeroTipo(opt.value)}
+              className={`flex flex-col rounded-2xl border-2 overflow-hidden transition-all duration-200 text-left ${
+                heroTipo === opt.value
+                  ? 'border-primary shadow-md shadow-primary/10'
+                  : 'border-stone-200 hover:border-stone-300'
+              }`}
+            >
+              {opt.preview}
+              <div className="p-3">
+                <div className="flex items-center justify-between">
+                  <span className="font-semibold text-sm text-secondary">{opt.label}</span>
+                  {heroTipo === opt.value && (
+                    <span className="text-[10px] bg-primary text-white px-2 py-0.5 rounded-full font-semibold tracking-wide">Ativo</span>
+                  )}
+                </div>
+                <p className="text-[11px] text-stone-400 mt-0.5 leading-snug">{opt.desc}</p>
+              </div>
+            </button>
+          ))}
         </div>
       </div>
     </form>

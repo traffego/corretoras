@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Phone, Mail, Award, CheckCircle2, ShieldCheck } from 'lucide-react';
 import { getSettings, supabase } from '@/lib/supabase';
-import Hero from '@/components/Hero';
+import HeroSelector from '@/components/HeroSelector';
 import PropertyCarousel from '@/components/PropertyCarousel';
 import ContactForm from '@/components/ContactForm';
 
@@ -44,7 +44,12 @@ export default async function Home() {
   return (
     <div className="space-y-24 pb-20">
       {/* 1. Seção Hero + Busca */}
-      <Hero settings={settings} bairros={bairros} condominios={condominios} />
+      <HeroSelector
+        settings={settings}
+        bairros={bairros}
+        condominios={condominios}
+        highlightedProperties={highlightedProperties}
+      />
 
       {/* 2. Seção de Destaques */}
       {highlightedProperties.length > 0 && (

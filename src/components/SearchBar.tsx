@@ -7,6 +7,7 @@ import { Search } from 'lucide-react';
 interface SearchBarProps {
   bairros: string[];
   condominios: string[];
+  dark?: boolean;
 }
 
 export default function SearchBar({ bairros, condominios }: SearchBarProps) {
