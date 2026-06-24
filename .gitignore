@@ -39,3 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# dados locais de imóveis (fotos já estão no Supabase Storage)
+/dados/
+
+# scripts de seed e utilitários locais
+/scripts/
