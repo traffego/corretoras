@@ -5,7 +5,7 @@ import { getSettings } from '@/lib/supabase';
 
 export const metadata = {
   title: 'Sobre Mim',
-  description: 'Conheça Gabriela Mateos, especialista em intermediação imobiliária de alto padrão.',
+  description: 'Conheça nossa trajetória e especialidade em intermediação imobiliária de alto padrão.',
 };
 
 export default async function SobreMimPage() {

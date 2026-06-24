@@ -380,7 +380,7 @@ export default function AdminConfiguracoesPage() {
                 Logotipo Comercial
               </span>
               <div className="flex items-center space-x-4">
-                <div className="relative w-16 h-12 rounded-xl border border-stone-200 bg-stone-100 overflow-hidden flex-shrink-0">
+                <div className="relative w-16 h-12 rounded-xl border border-stone-200 bg-stone-900 overflow-hidden flex-shrink-0">
                   {logoUrl ? (
                     <Image src={logoUrl} alt="Logo" fill className="object-contain p-1" />
                   ) : (

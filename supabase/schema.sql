@@ -7,12 +7,12 @@ create table settings (
   email_destino text,
   cor_primaria text default '#c5a880', -- Dourado/terroso padrão (elegante)
   cor_secundaria text default '#1c1917', -- Escuro/pedra padrão
-  nome_corretora text default 'Gabriela Mateos',
+  nome_corretora text default 'Patrícia e Allana (Imóveis Selecionados)',
   creci text default '12345-F',
-  biografia_curta text default 'Especialista em imóveis de alto padrão com mais de 10 anos de experiência no mercado de luxo.',
-  biografia_longa text default 'Gabriela Mateos é uma corretora de imóveis de luxo dedicada a conectar pessoas aos seus lares dos sonhos. Com um olhar refinado para arquitetura moderna, design premium e as melhores localizações, ela oferece um atendimento personalizado e exclusivo para clientes exigentes.',
+  biografia_curta text default 'Especialistas em imóveis selecionados de alto padrão em Sinop e região.',
+  biografia_longa text default 'Patrícia e Allana são especialistas em intermediação imobiliária de alto padrão, dedicadas a selecionar os melhores imóveis e condomínios fechados. Com foco em atendimento de excelência, transparência e curadoria rigorosa, elas ajudam você a encontrar a propriedade perfeita para seu estilo de vida.',
   foto_perfil_url text, -- Armazenada no storage ou link externo
-  logo_url text, -- Armazenada no storage ou link externo
+  logo_url text default '/logo.png', -- Armazenada no storage ou link externo
   updated_at timestamptz default now()
 );
 

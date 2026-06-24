@@ -89,10 +89,10 @@ export default function AdminDashboardLayout({
           {/* Logo */}
           <div className="hidden md:block">
             <span className="font-serif text-xl tracking-widest font-bold text-white block">
-              GABRIELA MATEOS
+              PAINEL ADMIN
             </span>
             <span className="text-[9px] tracking-[0.25em] text-primary font-semibold uppercase mt-0.5 block">
-              ADMINISTRAÇÃO
+              IMÓVEIS SELECIONADOS
             </span>
           </div>
 

@@ -48,7 +48,7 @@ export default function Hero({ settings, bairros, condominios }: HeroProps) {
               href="/sobre-mim"
               className="w-full sm:w-auto text-center border border-secondary/25 hover:border-secondary hover:bg-secondary/5 active:scale-95 px-8 py-4 rounded-full font-medium text-sm tracking-wider uppercase transition duration-300"
             >
-              Conhecer Gabriela
+              Conhecer Trajetória
             </Link>
           </div>
         </div>

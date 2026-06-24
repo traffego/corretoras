@@ -4,7 +4,7 @@ import ContactForm from '@/components/ContactForm';
 
 export const metadata = {
   title: 'Contato',
-  description: 'Fale com Gabriela Mateos e agende seu atendimento personalizado.',
+  description: 'Fale conosco e agende seu atendimento personalizado.',
 };
 
 export default async function ContatoPage() {
