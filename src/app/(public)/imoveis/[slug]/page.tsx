@@ -145,34 +145,19 @@ export default async function ImovelDetailPage({ params }: ImovelDetailPageProps
           {/* Galeria de Fotos */}
           <PropertyGallery images={property.property_images || []} />
 
-          {/* Ficha Técnica */}
-          <div className="space-y-4">
-            <h2 className="font-serif text-2xl font-bold text-secondary">
-              Ficha Técnica
-            </h2>
-            <FeatureIcons
-              quartos={property.quartos ?? 0}
-              suites={property.suites ?? 0}
-              banheiros={property.banheiros ?? 0}
-              vagas={property.vagas ?? 0}
-              area_total={property.area_total}
-              area_construida={property.area_construida}
-            />
-          </div>
+          {/* Características do Imóvel */}
+          {property.atributos && Array.isArray(property.atributos) && property.atributos.length > 0 && (
+            <AtributosImovel atributos={property.atributos} />
+          )}
 
           {/* Descrição */}
-          <div className="space-y-4">
-            <h2 className="font-serif text-2xl font-bold text-secondary">
-              Descrição
-            </h2>
-            <p className="text-stone-600 text-sm sm:text-base leading-relaxed whitespace-pre-line bg-stone-50 border border-stone-200/40 p-6 sm:p-8 rounded-2xl">
-              {property.descricao || 'Nenhuma descrição fornecida.'}
-            </p>
-          </div>
-
-          {/* Itens de Destaque (Atributos) */}
-          {property.atributos && property.atributos.length > 0 && (
-            <AtributosImovel atributos={property.atributos} />
+          {property.descricao && (
+            <div className="space-y-4">
+              <h2 className="font-serif text-2xl font-bold text-secondary">Descrição</h2>
+              <p className="text-stone-600 text-sm sm:text-base leading-relaxed whitespace-pre-line bg-stone-50 border border-stone-200/40 p-6 sm:p-8 rounded-2xl">
+                {property.descricao}
+              </p>
+            </div>
           )}
         </div>
 
