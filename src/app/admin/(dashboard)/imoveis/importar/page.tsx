@@ -35,7 +35,7 @@ function parseCSV(text: string): ImportRow[] {
     const values = parseCSVLine(line);
     const row: Record<string, string> = {};
     headers.forEach((h, i) => { row[h.trim()] = (values[i] || '').trim(); });
-    return row as ImportRow;
+    return row as unknown as ImportRow;
   });
 }
 
