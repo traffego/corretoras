@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { Award, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Award, ChevronLeft, ChevronRight, CheckCircle2 } from 'lucide-react';
 
 export interface Corretor {
   id: string;
@@ -12,6 +12,7 @@ export interface Corretor {
   biografia_longa?: string | null;
   foto_url?: string | null;
   especialidade?: string | null;
+  diferenciais?: string[] | null;
 }
 
 interface CorretoresCarouselProps {
@@ -93,6 +94,18 @@ export default function CorretoresCarousel({ corretores }: CorretoresCarouselPro
             <p className="text-stone-600 text-sm sm:text-base leading-relaxed">
               {corretor.biografia_longa}
             </p>
+          )}
+
+          {/* Diferenciais */}
+          {corretor.diferenciais && corretor.diferenciais.length > 0 && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+              {corretor.diferenciais.map((item, i) => (
+                <div key={i} className="flex items-center space-x-2 text-sm font-semibold text-secondary">
+                  <CheckCircle2 size={16} className="text-primary flex-shrink-0" />
+                  <span>{item}</span>
+                </div>
+              ))}
+            </div>
           )}
         </div>
       </div>

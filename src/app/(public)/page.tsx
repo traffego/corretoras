@@ -22,6 +22,25 @@ export default async function Home() {
   // Filtrar os destaques
   const highlightedProperties = properties.filter((p) => p.destaque === true);
 
+  // Buscar primeiro corretor ativo para os diferenciais
+  const { data: primeiroCorretor } = await supabase
+    .from('corretores')
+    .select('diferenciais')
+    .eq('ativo', true)
+    .order('ordem', { ascending: true })
+    .limit(1)
+    .single();
+
+  const diferenciais: string[] =
+    primeiroCorretor?.diferenciais?.length > 0
+      ? primeiroCorretor.diferenciais
+      : [
+          'Atendimento exclusivo com hora marcada',
+          'Curadoria rigorosa de portfólio',
+          'Assessoria jurídica completa no fechamento',
+          'Transparência e discrição em negociações',
+        ];
+
   // Extrair bairros e condomínios únicos para o SearchBar
   const bairros = Array.from(
     new Set(properties.map((p) => p.bairro).filter(Boolean))
@@ -116,12 +135,7 @@ export default async function Home() {
 
             {/* Diferenciais em Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm font-semibold text-secondary">
-              {[
-                'Atendimento exclusivo com hora marcada',
-                'Curadoria rigorosa de portfólio',
-                'Assessoria jurídica completa no fechamento',
-                'Transparência e discrição em negociações',
-              ].map((diff, i) => (
+              {diferenciais.map((diff, i) => (
                 <div key={i} className="flex items-center space-x-2">
                   <CheckCircle2 size={16} className="text-primary flex-shrink-0" />
                   <span>{diff}</span>

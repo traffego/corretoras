@@ -18,17 +18,19 @@ interface Corretor {
   biografia_longa: string;
   foto_url: string;
   especialidade: string;
+  diferenciais: string[];
   ordem: number;
   ativo: boolean;
 }
 
-const EMPTY: Omit<Corretor, 'id' | 'ordem' | 'ativo'> = {
+const EMPTY = {
   nome: '',
   creci: '',
   biografia_curta: '',
   biografia_longa: '',
   foto_url: '',
   especialidade: '',
+  diferenciais: [] as string[],
 };
 
 export default function AdminCorretoresPage() {
@@ -40,6 +42,7 @@ export default function AdminCorretoresPage() {
   const [success, setSuccess] = useState('');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState({ ...EMPTY });
+  const [novoDiferencial, setNovoDiferencial] = useState('');
   const fileRef = useRef<HTMLInputElement>(null);
 
   const fetchCorretores = async () => {
@@ -57,6 +60,7 @@ export default function AdminCorretoresPage() {
   const openNew = () => {
     setEditingId('new');
     setForm({ ...EMPTY });
+    setNovoDiferencial('');
     setError('');
     setSuccess('');
   };
@@ -70,12 +74,26 @@ export default function AdminCorretoresPage() {
       biografia_longa: c.biografia_longa || '',
       foto_url: c.foto_url || '',
       especialidade: c.especialidade || '',
+      diferenciais: Array.isArray(c.diferenciais) ? c.diferenciais : [],
     });
+    setNovoDiferencial('');
     setError('');
     setSuccess('');
   };
 
   const closeForm = () => { setEditingId(null); setError(''); setSuccess(''); };
+
+  // Diferenciais helpers
+  const addDiferencial = () => {
+    const val = novoDiferencial.trim();
+    if (!val) return;
+    setForm(f => ({ ...f, diferenciais: [...f.diferenciais, val] }));
+    setNovoDiferencial('');
+  };
+
+  const removeDiferencial = (idx: number) => {
+    setForm(f => ({ ...f, diferenciais: f.diferenciais.filter((_, i) => i !== idx) }));
+  };
 
   const handleSave = async () => {
     if (!form.nome.trim()) { setError('Nome é obrigatório.'); return; }
@@ -148,9 +166,9 @@ export default function AdminCorretoresPage() {
         </button>
       </div>
 
-      {/* Formulário modal inline */}
+      {/* Formulário inline */}
       {editingId && (
-        <div className="bg-white border border-stone-200/50 rounded-2xl p-6 sm:p-8 shadow-sm space-y-5">
+        <div className="bg-white border border-stone-200/50 rounded-2xl p-6 sm:p-8 shadow-sm space-y-6">
           <div className="flex items-center justify-between">
             <h2 className="font-serif text-lg font-bold text-secondary">
               {editingId === 'new' ? 'Novo Corretor' : 'Editar Corretor'}
@@ -171,6 +189,7 @@ export default function AdminCorretoresPage() {
             </div>
           )}
 
+          {/* Campos básicos */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="flex flex-col">
               <label className="text-[10px] tracking-widest uppercase font-semibold text-stone-400 mb-1.5">Nome *</label>
@@ -238,12 +257,70 @@ export default function AdminCorretoresPage() {
             <textarea
               value={form.biografia_longa}
               onChange={e => setForm(f => ({ ...f, biografia_longa: e.target.value }))}
-              rows={5}
+              rows={4}
               className="bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm focus:ring-1 focus:ring-primary focus:outline-none resize-none"
               placeholder="Trajetória profissional detalhada..."
             />
           </div>
 
+          {/* Diferenciais */}
+          <div className="space-y-3 pt-2 border-t border-stone-100">
+            <div>
+              <label className="text-[10px] tracking-widest uppercase font-semibold text-stone-400">
+                Destaques / Diferenciais
+              </label>
+              <p className="text-[11px] text-stone-400 mt-0.5">
+                Itens que aparecem com ✓ no perfil do corretor (ex: "Atendimento exclusivo com hora marcada").
+              </p>
+            </div>
+
+            {/* Lista dos itens adicionados */}
+            {form.diferenciais.length > 0 && (
+              <div className="space-y-2">
+                {form.diferenciais.map((item, idx) => (
+                  <div
+                    key={idx}
+                    className="flex items-center justify-between bg-stone-50 border border-stone-200 rounded-xl px-4 py-2.5"
+                  >
+                    <div className="flex items-center space-x-2 text-sm text-secondary">
+                      <CheckCircle2 size={14} className="text-primary flex-shrink-0" />
+                      <span>{item}</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => removeDiferencial(idx)}
+                      className="p-1 hover:bg-rose-50 hover:text-rose-500 text-stone-400 rounded-lg transition"
+                      aria-label="Remover"
+                    >
+                      <X size={14} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Input para adicionar novo */}
+            <div className="flex space-x-2">
+              <input
+                value={novoDiferencial}
+                onChange={e => setNovoDiferencial(e.target.value)}
+                onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addDiferencial(); } }}
+                className="flex-1 bg-stone-50 border border-stone-200 rounded-xl px-4 py-2.5 text-sm focus:ring-1 focus:ring-primary focus:outline-none"
+                placeholder="Ex: Curadoria rigorosa de portfólio"
+              />
+              <button
+                type="button"
+                onClick={addDiferencial}
+                disabled={!novoDiferencial.trim()}
+                className="inline-flex items-center space-x-1.5 bg-secondary hover:opacity-90 disabled:bg-stone-300 text-white text-xs font-semibold px-4 py-2.5 rounded-xl transition cursor-pointer"
+              >
+                <Plus size={14} />
+                <span>Adicionar</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Botões de ação */}
           <div className="flex justify-end space-x-3 pt-2">
             <button
               type="button"
@@ -301,7 +378,11 @@ export default function AdminCorretoresPage() {
               {/* Info */}
               <div className="flex-1 min-w-0">
                 <p className="font-semibold text-secondary text-sm truncate">{c.nome}</p>
-                <p className="text-[11px] text-stone-400 truncate">{c.creci || '—'} {c.especialidade ? `• ${c.especialidade}` : ''}</p>
+                <p className="text-[11px] text-stone-400 truncate">
+                  {c.creci || '—'}
+                  {c.especialidade ? ` • ${c.especialidade}` : ''}
+                  {c.diferenciais?.length > 0 ? ` • ${c.diferenciais.length} destaque${c.diferenciais.length > 1 ? 's' : ''}` : ''}
+                </p>
               </div>
 
               {/* Status */}
