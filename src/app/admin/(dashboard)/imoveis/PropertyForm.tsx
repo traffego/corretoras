@@ -76,6 +76,7 @@ export default function PropertyForm({
   // Atributos customizados
   const [atributos, setAtributos] = useState<Atributo[]>(initialProperty?.atributos || []);
   const [novoAtributo, setNovoAtributo] = useState<Atributo>({ nome: '', icone: 'star', descricao: '' });
+  const [iconPickerAberto, setIconPickerAberto] = useState(false);
 
   // Galeria recolhida no modo edição
   const [galeriaAberta, setGaleriaAberta] = useState(!isEditMode);
@@ -672,17 +673,45 @@ export default function PropertyForm({
                 className="bg-white border border-stone-200 rounded-xl px-3 py-2.5 text-sm focus:ring-1 focus:ring-primary focus:outline-none"
               />
             </div>
-            <div className="flex flex-col">
+            <div className="flex flex-col relative">
               <label className="text-[10px] tracking-widest uppercase font-semibold text-stone-400 mb-1.5">Ícone</label>
-              <select
-                value={novoAtributo.icone}
-                onChange={e => setNovoAtributo(a => ({ ...a, icone: e.target.value }))}
-                className="bg-white border border-stone-200 rounded-xl px-3 py-2.5 text-sm focus:ring-1 focus:ring-primary focus:outline-none"
+              {/* Botão que abre o picker */}
+              <button
+                type="button"
+                onClick={() => setIconPickerAberto(o => !o)}
+                className="flex items-center space-x-2 bg-white border border-stone-200 rounded-xl px-3 py-2.5 text-sm focus:ring-1 focus:ring-primary focus:outline-none hover:border-primary transition cursor-pointer"
               >
-                {ICONES_ATRIBUTO.map(opt => (
-                  <option key={opt.key} value={opt.key}>{opt.label}</option>
-                ))}
-              </select>
+                <span className="text-primary">{getIconeComponente(novoAtributo.icone, 16)}</span>
+                <span className="text-secondary font-medium flex-1 text-left">
+                  {ICONES_ATRIBUTO.find(i => i.key === novoAtributo.icone)?.label || 'Selecionar'}
+                </span>
+                <ChevronDown size={14} className={`text-stone-400 transition-transform duration-200 ${iconPickerAberto ? 'rotate-180' : ''}`} />
+              </button>
+
+              {/* Grid de ícones */}
+              {iconPickerAberto && (
+                <div className="absolute top-full left-0 right-0 z-50 mt-1 bg-white border border-stone-200 rounded-2xl shadow-xl p-3 grid grid-cols-5 gap-1.5 max-h-60 overflow-y-auto">
+                  {ICONES_ATRIBUTO.map(opt => (
+                    <button
+                      key={opt.key}
+                      type="button"
+                      title={opt.label}
+                      onClick={() => {
+                        setNovoAtributo(a => ({ ...a, icone: opt.key }));
+                        setIconPickerAberto(false);
+                      }}
+                      className={`flex flex-col items-center justify-center p-2 rounded-xl transition gap-1 cursor-pointer ${
+                        novoAtributo.icone === opt.key
+                          ? 'bg-primary/10 text-primary ring-1 ring-primary'
+                          : 'hover:bg-stone-100 text-stone-500 hover:text-secondary'
+                      }`}
+                    >
+                      {opt.icon}
+                      <span className="text-[8px] leading-tight text-center font-medium truncate w-full">{opt.label}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 
