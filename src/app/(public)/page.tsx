@@ -8,6 +8,7 @@ import HeroSelector from '@/components/HeroSelector';
 import PropertyCarousel from '@/components/PropertyCarousel';
 import ContactForm from '@/components/ContactForm';
 import CorretoresCarousel, { type Corretor } from '@/components/CorretoresCarousel';
+import WhatsAppLeadButton from '@/components/WhatsAppLeadButton';
 
 export default async function Home() {
   const settings = await getSettings();
@@ -160,14 +161,12 @@ export default async function Home() {
                   <span className="text-[10px] tracking-wider uppercase font-semibold text-stone-400">
                     Fale no WhatsApp
                   </span>
-                  <a
-                    href={whatsappInfo.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-base font-bold text-secondary hover:text-primary transition"
-                  >
-                    {whatsappInfo.display}
-                  </a>
+                  <WhatsAppLeadButton
+                    whatsLink={whatsappInfo.link}
+                    label={whatsappInfo.display}
+                    context={{ tipo: 'geral' }}
+                    className="!py-1.5 !px-0 !bg-transparent !shadow-none !text-secondary hover:!text-primary !text-base !font-bold !tracking-normal !uppercase-none"
+                  />
                 </div>
               </div>
 

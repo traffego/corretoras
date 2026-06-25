@@ -5,9 +5,9 @@ import Link from 'next/link';
 import { ArrowLeft, MapPin, Tag, Award, Phone } from 'lucide-react';
 import { getSettings, supabase } from '@/lib/supabase';
 import PropertyGallery from '@/components/PropertyGallery';
-import FeatureIcons from '@/components/FeatureIcons';
 import AtributosImovel from '@/components/AtributosImovel';
 import ContactForm from '@/components/ContactForm';
+import WhatsAppLeadButton from '@/components/WhatsAppLeadButton';
 import { Metadata } from 'next';
 
 interface ImovelDetailPageProps {
@@ -163,7 +163,7 @@ export default async function ImovelDetailPage({ params }: ImovelDetailPageProps
 
         {/* Lado Direito: Formulário e CTAs de Contato */}
         <div className="lg:col-span-4 space-y-6 lg:sticky lg:top-28">
-          {/* Caixa de Ação WhatsApp Direto */}
+          {/* Caixa de Ação WhatsApp com captura de lead */}
           <div className="bg-emerald-50/50 border border-emerald-200/50 rounded-2xl p-6 flex flex-col space-y-4">
             <div className="flex items-center space-x-3">
               <div className="bg-emerald-500 text-white p-2.5 rounded-xl">
@@ -178,14 +178,16 @@ export default async function ImovelDetailPage({ params }: ImovelDetailPageProps
                 </span>
               </div>
             </div>
-            <a
-              href={whatsLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full text-center bg-emerald-500 hover:bg-emerald-600 text-white font-medium text-xs tracking-wider uppercase py-4 rounded-xl shadow-md transition duration-300 flex items-center justify-center space-x-2 active:scale-98"
-            >
-              <span>Falar pelo WhatsApp</span>
-            </a>
+            <WhatsAppLeadButton
+              whatsLink={whatsLink}
+              fullWidth
+              context={{
+                tipo: 'imovel',
+                imovelId: property.id,
+                imovelCodigo: property.codigo,
+                imovelTitulo: property.titulo,
+              }}
+            />
           </div>
 
           {/* Formulário de Lead */}
