@@ -142,7 +142,7 @@ export default function SearchBar({ bairros, condominios }: SearchBarProps) {
       {/* Botão de Busca */}
       <button
         type="submit"
-        className="w-full md:w-auto bg-primary text-white p-4 md:p-3.5 rounded-xl md:rounded-full hover:scale-105 active:scale-95 transition-all duration-300 shadow-lg flex items-center justify-center space-x-2 font-medium text-sm"
+        className="w-full md:w-11 md:h-11 bg-primary text-white py-4 md:py-0 rounded-xl md:rounded-full hover:scale-105 active:scale-95 transition-all duration-300 shadow-lg flex items-center justify-center space-x-2 font-medium text-sm flex-shrink-0"
       >
         <Search size={16} />
         <span className="md:hidden">Buscar Imóveis</span>
