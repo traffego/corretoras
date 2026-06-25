@@ -18,13 +18,14 @@ interface ImoveisPageProps {
     precoMax?: string;
     quartos?: string;
     vagas?: string;
+    codigo?: string;
   }>;
 }
 
 export default async function ImoveisPage({ searchParams }: ImoveisPageProps) {
   // A partir do Next 15, searchParams é uma Promise e deve ser resolvida
   const resolvedSearchParams = await searchParams;
-  const { tipo, finalidade, localizacao, precoMin, precoMax, quartos, vagas } = resolvedSearchParams;
+  const { tipo, finalidade, localizacao, precoMin, precoMax, quartos, vagas, codigo } = resolvedSearchParams;
 
   // 1. Buscar TODOS os imóveis ativos para popular filtros dinâmicos de localização
   const { data: allActiveProps } = await supabase
@@ -51,6 +52,9 @@ export default async function ImoveisPage({ searchParams }: ImoveisPageProps) {
   }
   if (finalidade) {
     query = query.eq('finalidade', finalidade);
+  }
+  if (codigo) {
+    query = query.ilike('codigo', `%${codigo}%`);
   }
   if (localizacao) {
     if (localizacao.startsWith('condo:')) {

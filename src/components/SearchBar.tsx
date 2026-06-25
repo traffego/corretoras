@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Search } from 'lucide-react';
+import { Search, Hash } from 'lucide-react';
 
 interface SearchBarProps {
   bairros: string[];
@@ -16,15 +16,20 @@ export default function SearchBar({ bairros, condominios }: SearchBarProps) {
   const [finalidade, setFinalidade] = useState('venda');
   const [localizacao, setLocalizacao] = useState('');
   const [precoMax, setPrecoMax] = useState('');
+  const [codigoBusca, setCodigoBusca] = useState('');
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
+    // Busca por código — vai direto para listagem filtrada
+    if (codigoBusca.trim()) {
+      router.push(`/imoveis?codigo=${codigoBusca.trim().toUpperCase()}`);
+      return;
+    }
     const params = new URLSearchParams();
     if (tipo) params.append('tipo', tipo);
     if (finalidade) params.append('finalidade', finalidade);
     if (localizacao) params.append('localizacao', localizacao);
     if (precoMax) params.append('precoMax', precoMax);
-
     router.push(`/imoveis?${params.toString()}`);
   };
 
@@ -96,6 +101,23 @@ export default function SearchBar({ bairros, condominios }: SearchBarProps) {
             </optgroup>
           )}
         </select>
+      </div>
+
+      {/* Busca por Código */}
+      <div className="flex flex-col w-full md:w-auto border-b md:border-b-0 md:border-r border-stone-700/60 pb-3 md:pb-0 md:pr-4">
+        <label className="text-[10px] tracking-widest uppercase font-semibold text-primary mb-1">
+          Código
+        </label>
+        <div className="flex items-center space-x-1.5">
+          <Hash size={13} className="text-stone-500 flex-shrink-0" />
+          <input
+            type="text"
+            value={codigoBusca}
+            onChange={(e) => setCodigoBusca(e.target.value.toUpperCase())}
+            placeholder="Ex: IMV-AB12"
+            className="bg-transparent border-0 text-sm font-mono font-medium focus:ring-0 focus:outline-none text-stone-200 placeholder:text-stone-500 w-28"
+          />
+        </div>
       </div>
 
       {/* Faixa de Preço Máximo */}
