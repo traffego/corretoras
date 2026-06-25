@@ -32,7 +32,7 @@ export default async function Home() {
     .single();
 
   const diferenciais: string[] =
-    primeiroCorretor?.diferenciais?.length > 0
+    primeiroCorretor?.diferenciais && primeiroCorretor.diferenciais.length > 0
       ? primeiroCorretor.diferenciais
       : [
           'Atendimento exclusivo com hora marcada',
