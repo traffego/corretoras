@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import Image from 'next/image';
 import { Award, ChevronLeft, ChevronRight, CheckCircle2 } from 'lucide-react';
 
@@ -21,17 +21,28 @@ interface CorretoresCarouselProps {
 
 export default function CorretoresCarousel({ corretores }: CorretoresCarouselProps) {
   const [current, setCurrent] = useState(0);
+  const [paused, setPaused] = useState(false);
   const total = corretores.length;
 
   if (total === 0) return null;
 
-  const prev = () => setCurrent((c) => (c - 1 + total) % total);
-  const next = () => setCurrent((c) => (c + 1) % total);
+  const prev = useCallback(() => setCurrent((c) => (c - 1 + total) % total), [total]);
+  const next = useCallback(() => setCurrent((c) => (c + 1) % total), [total]);
+
+  useEffect(() => {
+    if (total <= 1 || paused) return;
+    const interval = setInterval(next, 5000);
+    return () => clearInterval(interval);
+  }, [total, paused, next]);
 
   const corretor = corretores[current];
 
   return (
-    <div className="relative">
+    <div
+      className="relative"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+    >
       {/* Card principal */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
         {/* Foto */}
