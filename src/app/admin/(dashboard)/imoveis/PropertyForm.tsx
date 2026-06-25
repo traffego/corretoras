@@ -55,7 +55,8 @@ export default function PropertyForm({
   // Form Fields
   const [titulo, setTitulo] = useState(initialProperty?.titulo || '');
   const [slug, setSlug] = useState(initialProperty?.slug || '');
-  const [codigo, setCodigo] = useState(initialProperty?.codigo || '');
+  const gerarCodigo = () => 'IMV-' + Math.random().toString(36).substring(2, 6).toUpperCase();
+  const [codigo, setCodigo] = useState(initialProperty?.codigo || (!isEditMode ? gerarCodigo() : ''));
   const [tipo, setTipo] = useState(initialProperty?.tipo || 'casa');
   const [finalidade, setFinalidade] = useState(initialProperty?.finalidade || 'venda');
   const [preco, setPreco] = useState(initialProperty?.preco || 0);
@@ -342,14 +343,26 @@ export default function PropertyForm({
               <label className="text-[10px] tracking-widest uppercase font-semibold text-stone-400 mb-1.5">
                 Código Exclusivo *
               </label>
-              <input
-                type="text"
-                required
-                value={codigo}
-                onChange={(e) => setCodigo(e.target.value)}
-                placeholder="Ex: GM001"
-                className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm text-secondary focus:ring-1 focus:ring-primary focus:outline-none"
-              />
+              <div className="flex space-x-2">
+                <input
+                  type="text"
+                  required
+                  value={codigo}
+                  onChange={(e) => setCodigo(e.target.value.toUpperCase())}
+                  placeholder="Ex: IMV-AB12"
+                  className="flex-1 bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm text-secondary font-mono tracking-widest focus:ring-1 focus:ring-primary focus:outline-none"
+                />
+                {!isEditMode && (
+                  <button
+                    type="button"
+                    onClick={() => setCodigo(gerarCodigo())}
+                    className="px-3 py-2.5 bg-stone-100 hover:bg-stone-200 border border-stone-200 rounded-xl text-[10px] font-bold text-stone-500 uppercase tracking-wider transition cursor-pointer whitespace-nowrap"
+                    title="Gerar novo código"
+                  >
+                    Gerar novo
+                  </button>
+                )}
+              </div>
             </div>
 
             {/* Tipo */}
