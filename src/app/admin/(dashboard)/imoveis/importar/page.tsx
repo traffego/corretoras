@@ -140,12 +140,12 @@ export default function ImportarImoveisPage() {
           <p className="text-sm text-stone-500 mt-1">Envie um arquivo CSV para cadastrar múltiplos imóveis de uma vez.</p>
         </div>
         <a
-          href="/templates/importar-imoveis.csv"
-          download
+          href="/api/templates/imoveis"
+          download="importar-imoveis.csv"
           className="inline-flex items-center space-x-2 bg-white border border-stone-200 hover:border-primary hover:text-primary text-stone-600 text-xs font-semibold px-4 py-2.5 rounded-xl transition"
         >
           <Download size={14} />
-          <span>Baixar Template</span>
+          <span>Baixar Template Excel</span>
         </a>
       </div>
 
