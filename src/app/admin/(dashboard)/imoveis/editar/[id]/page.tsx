@@ -52,6 +52,7 @@ export default async function AdminEditarImovelPage({ params }: AdminEditarImove
     descricao: property.descricao,
     destaque: property.destaque,
     ativo: property.ativo,
+    atributos: Array.isArray(property.atributos) ? property.atributos : [],
   };
 
   const mappedImages = (images || []).map((img) => ({
