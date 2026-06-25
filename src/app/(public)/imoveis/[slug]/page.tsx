@@ -6,6 +6,7 @@ import { ArrowLeft, MapPin, Tag, Award, Phone } from 'lucide-react';
 import { getSettings, supabase } from '@/lib/supabase';
 import PropertyGallery from '@/components/PropertyGallery';
 import FeatureIcons from '@/components/FeatureIcons';
+import AtributosImovel from '@/components/AtributosImovel';
 import ContactForm from '@/components/ContactForm';
 import { Metadata } from 'next';
 
@@ -168,6 +169,11 @@ export default async function ImovelDetailPage({ params }: ImovelDetailPageProps
               {property.descricao || 'Nenhuma descrição fornecida.'}
             </p>
           </div>
+
+          {/* Itens de Destaque (Atributos) */}
+          {property.atributos && property.atributos.length > 0 && (
+            <AtributosImovel atributos={property.atributos} />
+          )}
         </div>
 
         {/* Lado Direito: Formulário e CTAs de Contato */}

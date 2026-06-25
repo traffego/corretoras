@@ -3,8 +3,9 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
-import { ArrowLeft, Save, Trash2, ArrowUp, ArrowDown, Plus, Loader2, Image as ImageIcon } from 'lucide-react';
+import { ArrowLeft, Save, Trash2, ArrowUp, ArrowDown, Plus, Loader2, Image as ImageIcon, X } from 'lucide-react';
 import Image from 'next/image';
+import { ICONES_ATRIBUTO, getIconeComponente, type Atributo } from '@/components/AtributosImovel';
 
 interface PropertyImage {
   id?: string;
@@ -33,6 +34,7 @@ interface Property {
   descricao?: string | null;
   destaque?: boolean;
   ativo?: boolean;
+  atributos?: Atributo[];
 }
 
 interface PropertyFormProps {
@@ -68,7 +70,11 @@ export default function PropertyForm({
   const [vagas, setVagas] = useState(initialProperty?.vagas || 0);
   const [descricao, setDescricao] = useState(initialProperty?.descricao || '');
   const [destaque, setDestaque] = useState(initialProperty?.destaque || false);
-  const [ativo, setAtivo] = useState(initialProperty?.ativo !== false); // default true
+  const [ativo, setAtivo] = useState(initialProperty?.ativo !== false);
+
+  // Atributos customizados
+  const [atributos, setAtributos] = useState<Atributo[]>(initialProperty?.atributos || []);
+  const [novoAtributo, setNovoAtributo] = useState<Atributo>({ nome: '', icone: 'star', descricao: '' });
 
   // Images state
   const [images, setImages] = useState<PropertyImage[]>(initialImages);
@@ -193,6 +199,7 @@ export default function PropertyForm({
         descricao: descricao || null,
         destaque,
         ativo,
+        atributos: atributos.length > 0 ? atributos : [],
       };
 
       let propertyId = initialProperty?.id;
@@ -661,6 +668,100 @@ export default function PropertyForm({
                 </div>
               ))}
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Bloco de Atributos Customizados */}
+      <div className="bg-white border border-stone-200/50 rounded-2xl p-6 sm:p-8 shadow-sm space-y-5">
+        <div className="border-b pb-3 border-stone-100">
+          <h2 className="font-serif text-lg font-bold text-secondary">Itens de Destaque</h2>
+          <p className="text-xs text-stone-400 mt-1">Adicione atributos importantes com ícone e valor (ex: Vagas → Carro → 3).</p>
+        </div>
+
+        {/* Lista dos atributos adicionados */}
+        {atributos.length > 0 && (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+            {atributos.map((attr, idx) => (
+              <div key={idx} className="relative flex flex-col items-center text-center bg-stone-50 border border-stone-200 rounded-2xl p-4 space-y-1.5 group">
+                <button
+                  type="button"
+                  onClick={() => setAtributos(a => a.filter((_, i) => i !== idx))}
+                  className="absolute top-2 right-2 p-1 bg-white border border-stone-200 rounded-lg text-stone-400 hover:text-rose-500 hover:border-rose-200 opacity-0 group-hover:opacity-100 transition"
+                >
+                  <X size={12} />
+                </button>
+                <div className="bg-primary/10 text-primary p-2.5 rounded-xl">
+                  {getIconeComponente(attr.icone, 18)}
+                </div>
+                <span className="text-[10px] tracking-widest uppercase font-semibold text-stone-400 leading-tight">{attr.nome}</span>
+                <span className="font-serif text-base font-bold text-secondary">{attr.descricao}</span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Formulário para adicionar novo */}
+        <div className="bg-stone-50 border border-stone-200 rounded-2xl p-4 space-y-4">
+          <p className="text-[10px] tracking-widest uppercase font-semibold text-stone-400">Novo Item</p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="flex flex-col">
+              <label className="text-[10px] tracking-widest uppercase font-semibold text-stone-400 mb-1.5">Nome</label>
+              <input
+                value={novoAtributo.nome}
+                onChange={e => setNovoAtributo(a => ({ ...a, nome: e.target.value }))}
+                placeholder="Ex: Vagas"
+                className="bg-white border border-stone-200 rounded-xl px-3 py-2.5 text-sm focus:ring-1 focus:ring-primary focus:outline-none"
+              />
+            </div>
+            <div className="flex flex-col">
+              <label className="text-[10px] tracking-widest uppercase font-semibold text-stone-400 mb-1.5">Valor / Descrição</label>
+              <input
+                value={novoAtributo.descricao}
+                onChange={e => setNovoAtributo(a => ({ ...a, descricao: e.target.value }))}
+                placeholder="Ex: 3"
+                className="bg-white border border-stone-200 rounded-xl px-3 py-2.5 text-sm focus:ring-1 focus:ring-primary focus:outline-none"
+              />
+            </div>
+            <div className="flex flex-col">
+              <label className="text-[10px] tracking-widest uppercase font-semibold text-stone-400 mb-1.5">Ícone</label>
+              <select
+                value={novoAtributo.icone}
+                onChange={e => setNovoAtributo(a => ({ ...a, icone: e.target.value }))}
+                className="bg-white border border-stone-200 rounded-xl px-3 py-2.5 text-sm focus:ring-1 focus:ring-primary focus:outline-none"
+              >
+                {ICONES_ATRIBUTO.map(opt => (
+                  <option key={opt.key} value={opt.key}>{opt.label}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* Preview + botão */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="bg-primary/10 text-primary p-2.5 rounded-xl">
+                {getIconeComponente(novoAtributo.icone, 18)}
+              </div>
+              <div className="text-sm">
+                <span className="font-semibold text-secondary">{novoAtributo.nome || '—'}</span>
+                {novoAtributo.descricao && <span className="text-stone-400 ml-2">{novoAtributo.descricao}</span>}
+              </div>
+            </div>
+            <button
+              type="button"
+              disabled={!novoAtributo.nome.trim() || !novoAtributo.descricao.trim()}
+              onClick={() => {
+                if (!novoAtributo.nome.trim() || !novoAtributo.descricao.trim()) return;
+                setAtributos(a => [...a, { ...novoAtributo }]);
+                setNovoAtributo({ nome: '', icone: 'star', descricao: '' });
+              }}
+              className="inline-flex items-center space-x-1.5 bg-secondary hover:opacity-90 disabled:bg-stone-300 text-white text-xs font-semibold px-4 py-2.5 rounded-xl transition cursor-pointer"
+            >
+              <Plus size={14} />
+              <span>Adicionar</span>
+            </button>
           </div>
         </div>
       </div>
