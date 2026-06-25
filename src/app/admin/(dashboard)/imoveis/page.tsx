@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
-import { Plus, Edit2, Trash2, CheckCircle2, XCircle, Star, StarOff, Loader2 } from 'lucide-react';
+import { Plus, Edit2, Trash2, CheckCircle2, XCircle, Star, StarOff, Loader2, Copy } from 'lucide-react';
 
 interface Property {
   id: string;
@@ -94,9 +94,7 @@ export default function AdminImoveisPage() {
     }
 
     try {
-      // Deletar do banco de dados (o cascade cuidará das imagens referenciadas)
       const { error } = await supabase.from('properties').delete().eq('id', id);
-
       if (error) {
         alert('Erro ao excluir imóvel: ' + error.message);
       } else {
@@ -105,6 +103,51 @@ export default function AdminImoveisPage() {
     } catch (err) {
       console.error(err);
       alert('Falha ao excluir o imóvel.');
+    }
+  };
+
+  const handleDuplicate = async (id: string) => {
+    try {
+      // Buscar dados completos do imóvel
+      const { data: original, error: fetchErr } = await supabase
+        .from('properties')
+        .select('*')
+        .eq('id', id)
+        .single();
+      if (fetchErr || !original) { alert('Erro ao buscar imóvel.'); return; }
+
+      // Buscar imagens
+      const { data: imgs } = await supabase
+        .from('property_images')
+        .select('url, ordem')
+        .eq('property_id', id)
+        .order('ordem', { ascending: true });
+
+      // Gerar novo código e slug
+      const novoCodigo = 'IMV-' + Math.random().toString(36).substring(2, 6).toUpperCase();
+      const novoTitulo = `${original.titulo} (Cópia)`;
+      const novoSlug = original.slug + '-copia-' + Date.now();
+
+      const { id: _id, created_at, ...rest } = original;
+      const { data: inserted, error: insertErr } = await supabase
+        .from('properties')
+        .insert({ ...rest, titulo: novoTitulo, codigo: novoCodigo, slug: novoSlug, ativo: false, destaque: false })
+        .select('id')
+        .single();
+      if (insertErr || !inserted) { alert('Erro ao duplicar: ' + insertErr?.message); return; }
+
+      // Copiar imagens
+      if (imgs && imgs.length > 0) {
+        await supabase.from('property_images').insert(
+          imgs.map(img => ({ property_id: inserted.id, url: img.url, ordem: img.ordem }))
+        );
+      }
+
+      await fetchProperties();
+      alert(`Imóvel duplicado como "${novoTitulo}" (inativo). Edite antes de ativar.`);
+    } catch (err) {
+      console.error(err);
+      alert('Falha ao duplicar.');
     }
   };
 
@@ -229,7 +272,14 @@ export default function AdminImoveisPage() {
                     </td>
                     {/* Ações */}
                     <td className="py-4 px-6 text-right">
-                      <div className="flex justify-end items-center space-x-3">
+                      <div className="flex justify-end items-center space-x-2">
+                        <button
+                          onClick={() => handleDuplicate(prop.id)}
+                          className="p-2 bg-stone-50 border border-stone-200 hover:border-amber-400 hover:text-amber-600 rounded-lg transition cursor-pointer"
+                          title="Duplicar"
+                        >
+                          <Copy size={14} />
+                        </button>
                         <Link
                           href={`/admin/imoveis/editar/${prop.id}`}
                           className="p-2 bg-stone-50 border border-stone-200 hover:border-primary hover:text-primary rounded-lg transition"

@@ -6,7 +6,7 @@ import { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
 import {
   Plus, Trash2, Loader2, Save, X, GripVertical,
-  CheckCircle2, AlertCircle, User, Upload,
+  CheckCircle2, AlertCircle, User, Upload, Copy,
 } from 'lucide-react';
 import Image from 'next/image';
 
@@ -127,6 +127,19 @@ export default function AdminCorretoresPage() {
   const handleDelete = async (id: string) => {
     if (!confirm('Remover este corretor?')) return;
     await supabase.from('corretores').delete().eq('id', id);
+    fetchCorretores();
+  };
+
+  const handleDuplicate = async (c: Corretor) => {
+    const maxOrdem = corretores.length > 0 ? Math.max(...corretores.map(x => x.ordem)) + 1 : 0;
+    const { id: _id, ...rest } = c;
+    const { error } = await supabase.from('corretores').insert({
+      ...rest,
+      nome: `${c.nome} (Cópia)`,
+      ativo: false,
+      ordem: maxOrdem,
+    });
+    if (error) { alert('Erro ao duplicar: ' + error.message); return; }
     fetchCorretores();
   };
 
@@ -397,6 +410,13 @@ export default function AdminCorretoresPage() {
 
               {/* Ações */}
               <div className="flex items-center space-x-2">
+                <button
+                  onClick={() => handleDuplicate(c)}
+                  className="p-2 hover:bg-amber-50 rounded-lg text-stone-400 hover:text-amber-600 transition"
+                  title="Duplicar"
+                >
+                  <Copy size={16} />
+                </button>
                 <button
                   onClick={() => openEdit(c)}
                   className="p-2 hover:bg-stone-100 rounded-lg text-stone-500 hover:text-secondary transition"
