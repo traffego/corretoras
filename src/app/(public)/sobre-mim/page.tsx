@@ -1,17 +1,40 @@
 export const dynamic = 'force-dynamic';
 
-import Image from 'next/image';
 import Link from 'next/link';
 import { Award, Briefcase, Heart, Shield, Phone } from 'lucide-react';
-import { getSettings } from '@/lib/supabase';
+import { getSettings, supabase } from '@/lib/supabase';
+import CorretoresCarousel, { Corretor } from '@/components/CorretoresCarousel';
 
 export const metadata = {
-  title: 'Sobre Mim',
-  description: 'Conheça nossa trajetória e especialidade em intermediação imobiliária de alto padrão.',
+  title: 'Sobre Nós',
+  description: 'Conheça nossa equipe de corretores especializados em intermediação imobiliária de alto padrão.',
 };
 
 export default async function SobreMimPage() {
   const settings = await getSettings();
+
+  // Buscar corretores ativos ordenados
+  const { data: corretoresData } = await supabase
+    .from('corretores')
+    .select('*')
+    .eq('ativo', true)
+    .order('ordem', { ascending: true });
+
+  // Fallback: se não houver corretores no banco, usa os dados de settings
+  const corretores: Corretor[] =
+    corretoresData && corretoresData.length > 0
+      ? corretoresData
+      : [
+          {
+            id: 'fallback',
+            nome: settings.nome_corretora,
+            creci: settings.creci,
+            biografia_curta: settings.biografia_curta,
+            biografia_longa: settings.biografia_longa,
+            foto_url: settings.foto_perfil_url,
+            especialidade: null,
+          },
+        ];
 
   const values = [
     {
@@ -43,56 +66,22 @@ export default async function SobreMimPage() {
 
   return (
     <div className="space-y-20 pb-20">
-      {/* 1. Header Hero da Bio */}
+      {/* 1. Header com Carrossel de Corretores */}
       <section className="bg-gradient-to-b from-[#f5eee6] to-[#faf8f5] py-20 border-b border-stone-200/40">
-        <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-          {/* Foto da Corretora */}
-          <div className="lg:col-span-5 flex justify-center">
-            <div className="relative w-64 sm:w-80 h-96 sm:h-[420px]">
-              {/* Borda decorativa */}
-              <div className="absolute inset-0 border border-primary rounded-t-[10rem] rounded-b-2xl translate-x-4 translate-y-4 -z-10" />
-              <div className="absolute inset-0 rounded-t-[10rem] rounded-b-2xl overflow-hidden shadow-2xl bg-white border-4 border-white">
-                {settings.foto_perfil_url ? (
-                  <Image
-                    src={settings.foto_perfil_url}
-                    alt={settings.nome_corretora}
-                    fill
-                    priority
-                    sizes="(max-w-768px) 100vw, 400px"
-                    className="object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-stone-200 text-stone-400 font-serif">
-                    Sem Foto
-                  </div>
-                )}
-              </div>
-            </div>
+        <div className="max-w-7xl mx-auto px-6 space-y-4">
+          {/* Título da seção */}
+          <div className="text-center space-y-2 mb-12">
+            <span className="text-[10px] tracking-[0.25em] uppercase font-semibold text-primary block">
+              Nossa Equipe
+            </span>
+            <h1 className="font-serif text-4xl sm:text-5xl font-bold text-secondary">
+              {corretores.length === 1 ? 'Sobre a Corretora' : 'Conheça Nossas Corretoras'}
+            </h1>
+            <div className="w-12 h-1 bg-primary mx-auto rounded-full" />
           </div>
 
-          {/* Nome e Apresentação Curta */}
-          <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
-            <div className="space-y-2">
-              <span className="text-[10px] tracking-[0.25em] uppercase font-semibold text-primary block">
-                Apresentação Profissional
-              </span>
-              <h1 className="font-serif text-4xl sm:text-5xl font-bold text-secondary">
-                {settings.nome_corretora}
-              </h1>
-              <div className="inline-flex items-center space-x-1.5 text-xs text-stone-500 bg-stone-200/50 px-3 py-1 rounded-md">
-                <Award size={14} className="text-primary" />
-                <span>{settings.creci}</span>
-              </div>
-            </div>
-
-            <p className="text-stone-600 text-base sm:text-lg leading-relaxed font-medium italic">
-              &ldquo;{settings.biografia_curta}&rdquo;
-            </p>
-
-            <p className="text-stone-600 text-sm sm:text-base leading-relaxed">
-              {settings.biografia_longa}
-            </p>
-          </div>
+          {/* Carrossel */}
+          <CorretoresCarousel corretores={corretores} />
         </div>
       </section>
 
@@ -128,7 +117,7 @@ export default async function SobreMimPage() {
         </div>
       </section>
 
-      {/* 3. Banner CTA de Fale Conosco */}
+      {/* 3. Banner CTA */}
       <section className="max-w-5xl mx-auto px-6">
         <div className="bg-stone-900 text-white rounded-3xl p-10 sm:p-16 text-center space-y-8 relative overflow-hidden border border-stone-800 shadow-xl">
           <div className="absolute top-[-50px] right-[-50px] w-64 h-64 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
@@ -139,7 +128,7 @@ export default async function SobreMimPage() {
               Vamos encontrar o seu imóvel ideal juntos?
             </h2>
             <p className="text-sm text-stone-400 leading-relaxed">
-              Estou à disposição para fazer uma consultoria particular, entendendo sua demanda e buscando ativamente a propriedade que preenche todos os seus requisitos de qualidade.
+              Estamos à disposição para uma consultoria particular, entendendo sua demanda e buscando a propriedade perfeita para você.
             </p>
           </div>
 
@@ -155,7 +144,7 @@ export default async function SobreMimPage() {
             </a>
             <Link
               href="/contato"
-              className="w-full sm:w-auto text-center border border-stone-700 hover:border-stone-500 hover:bg-stone-850 px-8 py-4 rounded-full font-medium text-sm tracking-wider uppercase transition duration-300"
+              className="w-full sm:w-auto text-center border border-stone-700 hover:border-stone-500 px-8 py-4 rounded-full font-medium text-sm tracking-wider uppercase transition duration-300"
             >
               Enviar Mensagem
             </Link>
