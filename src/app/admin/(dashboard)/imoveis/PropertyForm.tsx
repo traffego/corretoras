@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
-import { ArrowLeft, Save, Trash2, ArrowUp, ArrowDown, Plus, Loader2, Image as ImageIcon, X } from 'lucide-react';
+import { ArrowLeft, Save, Trash2, ArrowUp, ArrowDown, Plus, Loader2, Image as ImageIcon, X, ChevronDown } from 'lucide-react';
 import Image from 'next/image';
 import { ICONES_ATRIBUTO, getIconeComponente, type Atributo } from '@/components/AtributosImovel';
 
@@ -75,6 +75,9 @@ export default function PropertyForm({
   // Atributos customizados
   const [atributos, setAtributos] = useState<Atributo[]>(initialProperty?.atributos || []);
   const [novoAtributo, setNovoAtributo] = useState<Atributo>({ nome: '', icone: 'star', descricao: '' });
+
+  // Galeria recolhida no modo edição
+  const [galeriaAberta, setGaleriaAberta] = useState(!isEditMode);
 
   // Images state
   const [images, setImages] = useState<PropertyImage[]>(initialImages);
@@ -495,99 +498,111 @@ export default function PropertyForm({
           </div>
 
           {/* Upload de Fotos */}
-          <div className="bg-white border border-stone-200/50 rounded-2xl p-6 shadow-sm space-y-4">
-            <div className="flex items-center justify-between border-b pb-2.5 border-stone-100">
-              <h3 className="font-serif text-base font-bold text-secondary">
-                Fotos do Imóvel *
-              </h3>
-              <span className="text-[10px] text-stone-400 font-bold font-mono">
-                {images.length} FOTO(S)
-              </span>
-            </div>
-
-            {/* Input de File */}
-            <div className="relative">
-              <input
-                type="file"
-                multiple
-                accept="image/*"
-                onChange={handleImageChange}
-                disabled={uploadingImages}
-                className="hidden"
-                id="file-upload"
+          <div className="bg-white border border-stone-200/50 rounded-2xl shadow-sm overflow-hidden">
+            {/* Cabeçalho clicável */}
+            <button
+              type="button"
+              onClick={() => setGaleriaAberta(o => !o)}
+              className="w-full flex items-center justify-between p-6 hover:bg-stone-50 transition cursor-pointer"
+            >
+              <div className="flex items-center space-x-3">
+                <h3 className="font-serif text-base font-bold text-secondary">Fotos do Imóvel *</h3>
+                <span className="text-[10px] text-stone-400 font-bold font-mono bg-stone-100 px-2 py-1 rounded-lg">
+                  {images.length} FOTO(S)
+                </span>
+              </div>
+              <ChevronDown
+                size={18}
+                className={`text-stone-400 transition-transform duration-300 ${galeriaAberta ? 'rotate-180' : ''}`}
               />
-              <label
-                htmlFor="file-upload"
-                className="flex items-center justify-center space-x-2 border-2 border-dashed border-stone-200 hover:border-primary rounded-xl py-6 cursor-pointer hover:bg-stone-50/50 transition duration-300"
-              >
-                {uploadingImages ? (
-                  <>
-                    <Loader2 size={18} className="animate-spin text-primary" />
-                    <span className="text-xs text-stone-500 font-semibold uppercase">Enviando fotos...</span>
-                  </>
-                ) : (
-                  <>
-                    <Plus size={18} className="text-stone-400" />
-                    <span className="text-xs text-stone-500 font-semibold uppercase">Adicionar Fotos</span>
-                  </>
-                )}
-              </label>
-            </div>
+            </button>
 
-            {/* Lista e Reordenação de Fotos */}
-            <div className="space-y-3 pt-2">
-              {images.map((img, idx) => (
-                <div
-                  key={img.url}
-                  className="flex items-center justify-between bg-stone-50 border border-stone-200/50 p-2.5 rounded-xl gap-3"
-                >
-                  <div className="flex items-center space-x-3">
-                    <div className="relative w-14 h-10 rounded-lg overflow-hidden border border-stone-200 bg-stone-100 flex-shrink-0">
-                      <Image src={img.url} alt={`Preview ${idx}`} fill className="object-cover" />
-                    </div>
-                    <div className="flex flex-col">
-                      <span className="text-[10px] text-stone-400 font-bold uppercase">Foto {idx + 1}</span>
-                      {idx === 0 && (
-                        <span className="text-[9px] bg-primary/10 text-primary px-1.5 py-0.5 rounded font-semibold w-max mt-0.5 uppercase tracking-wide">
-                          Capa
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="flex items-center space-x-1.5">
-                    {/* Botões Mover */}
-                    <button
-                      type="button"
-                      onClick={() => handleMoveImage(idx, 'up')}
-                      disabled={idx === 0}
-                      className="p-1.5 bg-white border border-stone-200 rounded text-stone-400 hover:text-secondary disabled:opacity-30 cursor-pointer"
-                      title="Mover para cima"
-                    >
-                      <ArrowUp size={12} />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleMoveImage(idx, 'down')}
-                      disabled={idx === images.length - 1}
-                      className="p-1.5 bg-white border border-stone-200 rounded text-stone-400 hover:text-secondary disabled:opacity-30 cursor-pointer"
-                      title="Mover para baixo"
-                    >
-                      <ArrowDown size={12} />
-                    </button>
-                    {/* Botão Excluir */}
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveImage(idx)}
-                      className="p-1.5 bg-white border border-stone-200 hover:border-rose-100 rounded text-stone-400 hover:text-rose-500 cursor-pointer"
-                      title="Remover"
-                    >
-                      <Trash2 size={12} />
-                    </button>
-                  </div>
+            {/* Conteúdo recolhível */}
+            {galeriaAberta && (
+              <div className="px-6 pb-6 space-y-4 border-t border-stone-100">
+                {/* Input de File */}
+                <div className="relative pt-4">
+                  <input
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    disabled={uploadingImages}
+                    className="hidden"
+                    id="file-upload"
+                  />
+                  <label
+                    htmlFor="file-upload"
+                    className="flex items-center justify-center space-x-2 border-2 border-dashed border-stone-200 hover:border-primary rounded-xl py-6 cursor-pointer hover:bg-stone-50/50 transition duration-300"
+                  >
+                    {uploadingImages ? (
+                      <>
+                        <Loader2 size={18} className="animate-spin text-primary" />
+                        <span className="text-xs text-stone-500 font-semibold uppercase">Enviando fotos...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Plus size={18} className="text-stone-400" />
+                        <span className="text-xs text-stone-500 font-semibold uppercase">Adicionar Fotos</span>
+                      </>
+                    )}
+                  </label>
                 </div>
-              ))}
-            </div>
+
+                {/* Lista e Reordenação de Fotos */}
+                <div className="space-y-3">
+                  {images.map((img, idx) => (
+                    <div
+                      key={img.url}
+                      className="flex items-center justify-between bg-stone-50 border border-stone-200/50 p-2.5 rounded-xl gap-3"
+                    >
+                      <div className="flex items-center space-x-3">
+                        <div className="relative w-14 h-10 rounded-lg overflow-hidden border border-stone-200 bg-stone-100 flex-shrink-0">
+                          <Image src={img.url} alt={`Preview ${idx}`} fill className="object-cover" />
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="text-[10px] text-stone-400 font-bold uppercase">Foto {idx + 1}</span>
+                          {idx === 0 && (
+                            <span className="text-[9px] bg-primary/10 text-primary px-1.5 py-0.5 rounded font-semibold w-max mt-0.5 uppercase tracking-wide">
+                              Capa
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="flex items-center space-x-1.5">
+                        <button
+                          type="button"
+                          onClick={() => handleMoveImage(idx, 'up')}
+                          disabled={idx === 0}
+                          className="p-1.5 bg-white border border-stone-200 rounded text-stone-400 hover:text-secondary disabled:opacity-30 cursor-pointer"
+                          title="Mover para cima"
+                        >
+                          <ArrowUp size={12} />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleMoveImage(idx, 'down')}
+                          disabled={idx === images.length - 1}
+                          className="p-1.5 bg-white border border-stone-200 rounded text-stone-400 hover:text-secondary disabled:opacity-30 cursor-pointer"
+                          title="Mover para baixo"
+                        >
+                          <ArrowDown size={12} />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveImage(idx)}
+                          className="p-1.5 bg-white border border-stone-200 hover:border-rose-100 rounded text-stone-400 hover:text-rose-500 cursor-pointer"
+                          title="Remover"
+                        >
+                          <Trash2 size={12} />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
