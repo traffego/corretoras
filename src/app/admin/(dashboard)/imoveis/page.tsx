@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
-import { Plus, Edit2, Trash2, CheckCircle2, XCircle, Star, StarOff, Loader2, Copy } from 'lucide-react';
+import { Plus, Edit2, Trash2, CheckCircle2, XCircle, Star, StarOff, Loader2, Copy, Upload } from 'lucide-react';
 
 interface Property {
   id: string;
@@ -171,13 +171,22 @@ export default function AdminImoveisPage() {
             Gerencie as ofertas de imóveis ativos, destaques e listagem geral.
           </p>
         </div>
-        <Link
-          href="/admin/imoveis/novo"
-          className="inline-flex items-center space-x-2 bg-primary hover:opacity-90 active:scale-95 text-white font-semibold text-xs tracking-wider uppercase px-5 py-3.5 rounded-xl transition duration-300 shadow-md cursor-pointer"
-        >
-          <Plus size={16} />
-          <span>Cadastrar Imóvel</span>
-        </Link>
+        <div className="flex items-center space-x-3">
+          <Link
+            href="/admin/imoveis/importar"
+            className="inline-flex items-center space-x-2 bg-white border border-stone-200 hover:border-primary hover:text-primary text-stone-600 font-semibold text-xs tracking-wider uppercase px-4 py-3.5 rounded-xl transition duration-300 cursor-pointer"
+          >
+            <Upload size={15} />
+            <span>Importar CSV</span>
+          </Link>
+          <Link
+            href="/admin/imoveis/novo"
+            className="inline-flex items-center space-x-2 bg-primary hover:opacity-90 active:scale-95 text-white font-semibold text-xs tracking-wider uppercase px-5 py-3.5 rounded-xl transition duration-300 shadow-md cursor-pointer"
+          >
+            <Plus size={16} />
+            <span>Cadastrar Imóvel</span>
+          </Link>
+        </div>
       </div>
 
       {errorMsg && (
