@@ -7,6 +7,7 @@ import { getSettings, supabase } from '@/lib/supabase';
 import HeroSelector from '@/components/HeroSelector';
 import PropertyCarousel from '@/components/PropertyCarousel';
 import ContactForm from '@/components/ContactForm';
+import CorretoresCarousel, { type Corretor } from '@/components/CorretoresCarousel';
 
 export default async function Home() {
   const settings = await getSettings();
@@ -22,18 +23,38 @@ export default async function Home() {
   // Filtrar os destaques
   const highlightedProperties = properties.filter((p) => p.destaque === true);
 
-  // Buscar primeiro corretor ativo para os diferenciais
-  const { data: primeiroCorretor } = await supabase
+  // Buscar corretores ativos para a seção "Sobre"
+  const { data: corretoresData } = await supabase
     .from('corretores')
-    .select('diferenciais')
+    .select('*')
     .eq('ativo', true)
-    .order('ordem', { ascending: true })
-    .limit(1)
-    .single();
+    .order('ordem', { ascending: true });
 
+  const corretores: Corretor[] =
+    corretoresData && corretoresData.length > 0
+      ? corretoresData
+      : [
+          {
+            id: 'fallback',
+            nome: settings.nome_corretora,
+            creci: settings.creci,
+            biografia_curta: settings.biografia_curta,
+            biografia_longa: settings.biografia_longa,
+            foto_url: settings.foto_perfil_url,
+            especialidade: null,
+            diferenciais: [
+              'Atendimento exclusivo com hora marcada',
+              'Curadoria rigorosa de portfólio',
+              'Assessoria jurídica completa no fechamento',
+              'Transparência e discrição em negociações',
+            ],
+          },
+        ];
+
+  // Diferenciais do primeiro corretor (para fallback)
   const diferenciais: string[] =
-    primeiroCorretor?.diferenciais && primeiroCorretor.diferenciais.length > 0
-      ? primeiroCorretor.diferenciais
+    corretores[0]?.diferenciais && corretores[0].diferenciais.length > 0
+      ? corretores[0].diferenciais
       : [
           'Atendimento exclusivo com hora marcada',
           'Curadoria rigorosa de portfólio',
@@ -86,71 +107,28 @@ export default async function Home() {
         </section>
       )}
 
-      {/* 3. Seção Sobre Mim / Apresentação */}
+      {/* 3. Seção Sobre / Corretoras */}
       <section className="bg-stone-100 py-20 border-y border-stone-200/50">
-        <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-          {/* Lado Esquerdo: Imagem da Corretora */}
-          <div className="lg:col-span-5 flex justify-center relative">
-            <div className="relative w-64 sm:w-72 aspect-[3/4] rounded-2xl overflow-hidden shadow-xl bg-white border border-stone-200">
-              {settings.foto_perfil_url ? (
-                <Image
-                  src={settings.foto_perfil_url}
-                  alt={settings.nome_corretora}
-                  fill
-                  sizes="300px"
-                  className="object-cover"
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center bg-stone-200 text-stone-400 font-serif">
-                  Sem Foto
-                </div>
-              )}
-            </div>
-            {/* Decoração flutuante */}
-            <div className="absolute -bottom-6 -right-6 bg-white p-4 rounded-xl shadow-lg border border-stone-100 flex flex-col items-center">
-              <ShieldCheck size={28} className="text-primary mb-1" />
-              <span className="text-[9px] tracking-wider uppercase font-semibold text-stone-400">
-                Garantia e Credibilidade
-              </span>
-              <span className="text-xs font-bold text-secondary mt-0.5">
-                {settings.creci}
-              </span>
-            </div>
+        <div className="max-w-7xl mx-auto px-6 space-y-10">
+          <div className="text-center space-y-2">
+            <span className="text-[10px] tracking-[0.25em] uppercase font-semibold text-primary block">
+              {corretores.length === 1 ? 'Sobre a Corretora' : 'Nossa Equipe'}
+            </span>
+            <h2 className="font-serif text-3xl sm:text-4xl font-bold text-secondary">
+              {corretores.length === 1 ? corretores[0].nome : 'Conheça Nossas Corretoras'}
+            </h2>
+            <div className="w-12 h-1 bg-primary mx-auto rounded-full" />
           </div>
 
-          {/* Lado Direito: Texto Biográfico */}
-          <div className="lg:col-span-7 space-y-6">
-            <div className="space-y-2">
-              <span className="text-[10px] tracking-[0.25em] uppercase font-semibold text-primary block">
-                Sobre a Corretora
-              </span>
-              <h2 className="font-serif text-3xl sm:text-4xl font-bold text-secondary">
-                {settings.nome_corretora}
-              </h2>
-            </div>
+          <CorretoresCarousel corretores={corretores} />
 
-            <p className="text-stone-600 leading-relaxed text-sm sm:text-base">
-              {settings.biografia_longa}
-            </p>
-
-            {/* Diferenciais em Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm font-semibold text-secondary">
-              {diferenciais.map((diff, i) => (
-                <div key={i} className="flex items-center space-x-2">
-                  <CheckCircle2 size={16} className="text-primary flex-shrink-0" />
-                  <span>{diff}</span>
-                </div>
-              ))}
-            </div>
-
-            <div className="pt-4">
-              <Link
-                href="/sobre-mim"
-                className="inline-flex items-center space-x-2 bg-secondary text-white hover:bg-stone-850 active:scale-95 px-8 py-3.5 rounded-full font-semibold text-xs tracking-wider uppercase shadow-md transition duration-300"
-              >
-                <span>Conhecer Trajetória Completa</span>
-              </Link>
-            </div>
+          <div className="text-center pt-2">
+            <Link
+              href="/sobre-mim"
+              className="inline-flex items-center space-x-2 bg-secondary text-white hover:opacity-90 active:scale-95 px-8 py-3.5 rounded-full font-semibold text-xs tracking-wider uppercase shadow-md transition duration-300"
+            >
+              <span>Conhecer Trajetória Completa</span>
+            </Link>
           </div>
         </div>
       </section>
