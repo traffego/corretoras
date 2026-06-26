@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
-import { Save, Loader2, Image as ImageIcon, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Save, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
 import Image from 'next/image';
 
 interface Settings {
@@ -67,7 +67,7 @@ export default function AdminConfiguracoesPage() {
           setBiografiaCurta(data.biografia_curta || '');
           setBiografiaLonga(data.biografia_longa || '');
           setFotoPerfilUrl(data.foto_perfil_url || '');
-          setLogoUrl(data.logo_url || '');
+          setLogoUrl(data.logo_url || '/logo.png');
           setHeroTipo((data.hero_tipo as 'padrao' | 'wide' | 'galeria' | 'corretores') || 'padrao');
         }
       } catch (err) {
@@ -279,34 +279,6 @@ export default function AdminConfiguracoesPage() {
             </div>
           </div>
 
-          {/* Biografia */}
-          <div className="space-y-4 pt-4 border-t border-stone-100">
-            <h2 className="font-serif text-base font-bold text-secondary border-b pb-2 border-stone-100">
-              Sobre a Corretora
-            </h2>
-            <div className="flex flex-col">
-              <label className="text-[10px] tracking-widest uppercase font-semibold text-stone-400 mb-1.5">
-                Biografia Curta (Subtítulo do Hero)
-              </label>
-              <textarea
-                rows={2}
-                value={biografiaCurta}
-                onChange={(e) => setBiografiaCurta(e.target.value)}
-                className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm text-secondary focus:ring-1 focus:ring-primary focus:outline-none resize-none"
-              />
-            </div>
-            <div className="flex flex-col">
-              <label className="text-[10px] tracking-widest uppercase font-semibold text-stone-400 mb-1.5">
-                Biografia Detalhada (Apresentação Principal)
-              </label>
-              <textarea
-                rows={5}
-                value={biografiaLonga}
-                onChange={(e) => setBiografiaLonga(e.target.value)}
-                className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm text-secondary focus:ring-1 focus:ring-primary focus:outline-none resize-none"
-              />
-            </div>
-          </div>
         </div>
 
         {/* Lado Direito: Cores e Media Uploads */}
@@ -347,40 +319,6 @@ export default function AdminConfiguracoesPage() {
             <h2 className="font-serif text-base font-bold text-secondary border-b pb-2 border-stone-100">
               Arquivos Visuais
             </h2>
-
-            {/* Foto Perfil */}
-            <div className="space-y-2">
-              <span className="text-[10px] tracking-widest uppercase font-semibold text-stone-400">
-                Foto do Perfil
-              </span>
-              <div className="flex items-center space-x-4">
-                <div className="relative w-16 h-16 rounded-xl border border-stone-200 bg-stone-100 overflow-hidden flex-shrink-0">
-                  {fotoPerfilUrl ? (
-                    <Image src={fotoPerfilUrl} alt="Perfil" fill className="object-cover" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-stone-300">
-                      <ImageIcon size={24} />
-                    </div>
-                  )}
-                </div>
-                <div>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => handleFileUpload(e, 'foto')}
-                    disabled={uploadingFoto}
-                    id="foto-upload"
-                    className="hidden"
-                  />
-                  <label
-                    htmlFor="foto-upload"
-                    className="bg-stone-50 border border-stone-200 hover:bg-stone-100 text-stone-600 text-xs px-3.5 py-2.5 rounded-lg font-semibold tracking-wide cursor-pointer flex items-center justify-center transition duration-300"
-                  >
-                    {uploadingFoto ? 'Carregando...' : 'Alterar Foto'}
-                  </label>
-                </div>
-              </div>
-            </div>
 
             {/* Logo */}
             <div className="space-y-2 border-t border-stone-100 pt-4">
