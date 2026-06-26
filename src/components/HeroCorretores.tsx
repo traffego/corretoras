@@ -104,9 +104,16 @@ export default function HeroCorretores({
                 <img
                   src={p.corretor.foto_url}
                   alt={p.corretor.nome}
-                  className={`w-full h-full object-cover object-top transition-all duration-500 ${
-                    p.isBlurred ? 'blur-lg scale-110' : ''
+                  className={`absolute h-full object-cover transition-all duration-500 ${
+                    p.isBlurred ? 'w-full left-0 blur-lg scale-110' : ''
                   }`}
+                  style={{
+                    objectPosition: 'center top',
+                    ...(!p.isBlurred && {
+                      left: `${p.start - 6}%`,
+                      width: `${(p.end - p.start) + 6}%`,
+                    }),
+                  }}
                 />
               ) : (
                 <div
