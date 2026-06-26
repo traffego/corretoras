@@ -1,6 +1,5 @@
 'use client';
 
-
 import Link from 'next/link';
 import { Award, ArrowRight } from 'lucide-react';
 import { SystemSettings } from '@/lib/supabase';
@@ -17,17 +16,16 @@ interface HeroCorretoresProps {
 /**
  * Calcula o clip-path diagonal para cada painel.
  * A linha divisória vai de cima-direita para baixo-esquerda, criando
- * a separação diagonal premium entre as seções de cada corretor.
+ * a separação diagonal premium entre as seções.
  */
-function getPanelClipPath(index: number, total: number): string {
+function getCustomClipPath(idx: number, total: number, start: number, end: number): string {
   if (total <= 1) return '';
-  const D = 9; // deslocamento diagonal em %
-  const W = 100 / total;
+  const D = 6; // deslocamento diagonal em %
 
-  const tl = index === 0 ? 0 : index * W;
-  const tr = index === total - 1 ? 100 : (index + 1) * W;
-  const bl = index === 0 ? 0 : index * W - D;
-  const br = index === total - 1 ? 100 : (index + 1) * W - D;
+  const tl = idx === 0 ? 0 : start;
+  const tr = idx === total - 1 ? 100 : end;
+  const bl = idx === 0 ? 0 : start - D;
+  const br = idx === total - 1 ? 100 : end - D;
 
   return `polygon(${tl}% 0%, ${tr}% 0%, ${br}% 100%, ${bl}% 100%)`;
 }
@@ -38,52 +36,120 @@ export default function HeroCorretores({
   condominios,
   corretores,
 }: HeroCorretoresProps) {
-  const total = corretores.length;
+  const N = corretores.length;
+  if (N === 0) return null;
 
-  if (total === 0) return null;
+  // Montar os painéis: esquerdo (borrado), corretores normais, direito (borrado)
+  const panels = [];
+  
+  // Painel esquerdo (borrado, reflete primeiro corretor)
+  panels.push({
+    isBlurred: true,
+    corretor: corretores[0],
+    weight: 1,
+  });
 
-  // ─── LAYOUT UMA SÓ CORRETORA ────────────────────────────────────────────────
-  if (total === 1) {
-    const c = corretores[0];
-    return (
-      <section className="relative min-h-screen flex flex-col justify-end overflow-hidden">
-        {/* Foto como fundo full-screen */}
-        <div className="absolute inset-0">
-          {c.foto_url ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={c.foto_url}
-              alt={c.nome}
-              className="w-full h-full object-cover object-top"
-            />
-          ) : (
-            <div className="w-full h-full bg-gradient-to-br from-stone-800 to-stone-950" />
-          )}
-          {/* Gradiente para legibilidade do texto abaixo */}
-          <div className="absolute inset-0 bg-gradient-to-t from-stone-950 via-stone-900/60 to-stone-900/10" />
-          {/* Vinheta lateral sutil */}
-          <div className="absolute inset-0 bg-gradient-to-r from-stone-950/30 via-transparent to-stone-950/30" />
-        </div>
+  // Painéis centrais (normais)
+  corretores.forEach((c) => {
+    panels.push({
+      isBlurred: false,
+      corretor: c,
+      weight: 2.5,
+    });
+  });
 
-        {/* Conteúdo central */}
-        <div className="relative z-10 flex-1 flex flex-col items-center justify-end text-center px-6 pt-32 pb-8">
+  // Painel direito (borrado, reflete último corretor)
+  panels.push({
+    isBlurred: true,
+    corretor: corretores[N - 1],
+    weight: 1,
+  });
+
+  const total = N + 2;
+  const totalWeight = panels.reduce((sum, p) => sum + p.weight, 0);
+  
+  let currentStart = 0;
+  const panelsWithCoords = panels.map((p, idx) => {
+    const start = currentStart;
+    const end = start + (p.weight / totalWeight) * 100;
+    currentStart = end;
+    return {
+      ...p,
+      start,
+      end,
+    };
+  });
+
+  return (
+    <section className="relative min-h-screen flex flex-col justify-end overflow-hidden bg-stone-950">
+      {/* ── Painéis diagonais com clip-path ── */}
+      <div className="absolute inset-0 flex">
+        {panelsWithCoords.map((p, i) => {
+          const clipPath = getCustomClipPath(i, total, p.start, p.end);
+          return (
+            <div
+              key={i}
+              className="absolute inset-0 transition-all duration-500"
+              style={{
+                clipPath,
+                zIndex: p.isBlurred ? 1 : 10,
+                // Sombra projetada nas laterais dos painéis normais
+                filter: p.isBlurred
+                  ? 'none'
+                  : 'drop-shadow(-8px 0 10px rgba(0,0,0,0.6)) drop-shadow(8px 0 10px rgba(0,0,0,0.6))',
+              }}
+            >
+              {p.corretor.foto_url ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={p.corretor.foto_url}
+                  alt={p.corretor.nome}
+                  className={`w-full h-full object-cover object-top transition-all duration-500 ${
+                    p.isBlurred ? 'blur-lg scale-110' : ''
+                  }`}
+                />
+              ) : (
+                <div
+                  className="w-full h-full"
+                  style={{
+                    background: p.isBlurred
+                      ? 'linear-gradient(180deg, #1c1917, #0c0a09)'
+                      : `linear-gradient(160deg, hsl(${20 + i * 35}, 12%, ${28 - i * 4}%), hsl(${20 + i * 35}, 12%, 10%))`,
+                  }}
+                />
+              )}
+
+              {/* Overlays de escurecimento e gradiente */}
+              {p.isBlurred ? (
+                <div className="absolute inset-0 bg-stone-950/65" />
+              ) : (
+                <div className="absolute inset-0 bg-gradient-to-t from-stone-950/92 via-stone-900/40 to-stone-900/5" />
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* ── Caso N === 1: Textos centralizados e CTAs ── */}
+      {N === 1 && (
+        <div className="relative z-20 flex-1 flex flex-col items-center justify-end text-center px-6 pt-32 pb-8">
           {/* Badge CRECI */}
           <div className="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-sm border border-primary/40 px-5 py-2.5 rounded-full shadow-lg mb-6">
             <Award size={15} className="text-primary" />
             <span className="text-[11px] tracking-[0.2em] uppercase font-semibold text-stone-200">
-              {c.creci || settings.creci}
+              {corretores[0].creci || settings.creci}
             </span>
           </div>
 
           {/* Nome da corretora */}
           <h1 className="font-serif text-4xl sm:text-6xl lg:text-7xl font-bold text-white leading-tight max-w-4xl mb-4 drop-shadow-lg">
-            {c.nome}
+            {corretores[0].nome}
           </h1>
 
           {/* Frase curta */}
-          {c.biografia_curta && (
+          {corretores[0].biografia_curta && (
             <p className="text-stone-300 text-base sm:text-xl max-w-2xl leading-relaxed mb-10 drop-shadow-md">
-              &ldquo;{c.biografia_curta}&rdquo;
+              &ldquo;{corretores[0].biografia_curta}&rdquo;
             </p>
           )}
 
@@ -104,135 +170,51 @@ export default function HeroCorretores({
             </Link>
           </div>
         </div>
+      )}
 
-        {/* Barra de Busca */}
-        <div className="relative z-10 w-full max-w-6xl mx-auto px-6 pb-10">
-          <div className="w-full h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent mb-8" />
-          <SearchBar bairros={bairros} condominios={condominios} dark />
-        </div>
-      </section>
-    );
-  }
-
-  // ─── LAYOUT MÚLTIPLAS CORRETORAS (painéis diagonais) ───────────────────────
-  return (
-    <section className="relative min-h-screen flex flex-col justify-end overflow-hidden">
-
-      {/* ── Desktop: painéis diagonais com clip-path ── */}
-      <div className="absolute inset-0 hidden md:block">
-        {corretores.map((c, i) => {
-          const clipPath = getPanelClipPath(i, total);
-          return (
-            <div
-              key={c.id}
-              className="absolute inset-0"
-              style={{ clipPath, zIndex: i }}
-            >
-              {c.foto_url ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={c.foto_url}
-                  alt={c.nome}
-                  className="w-full h-full object-cover object-top"
-                  style={{ objectPosition: `${((i + 0.5) / total) * 100}% top` }}
-                />
-              ) : (
-                <div
-                  className="w-full h-full"
-                  style={{
-                    background: `linear-gradient(160deg, hsl(${20 + i * 35}, 12%, ${28 - i * 4}%), hsl(${20 + i * 35}, 12%, 10%))`,
-                  }}
-                />
-              )}
-              {/* Overlay gradiente por painel */}
-              <div className="absolute inset-0 bg-gradient-to-t from-stone-950/92 via-stone-900/40 to-stone-900/5" />
-            </div>
-          );
-        })}
-      </div>
-
-      {/* ── Desktop: textos sobrepostos a cada painel ── */}
-      <div className="absolute inset-0 z-20 hidden md:block pointer-events-none">
-        {corretores.map((c, i) => {
-          const W = 100 / total;
-          // Centraliza o texto visualmente dentro do painel, com leve offset para a esquerda
-          // (a diagonal puxa a área visível um pouco para a esquerda)
-          const leftPct = i * W + 1.5;
-          const widthPct = W - 3;
-          return (
-            <div
-              key={c.id}
-              className="absolute bottom-36 space-y-2 px-5"
-              style={{ left: `${leftPct}%`, width: `${widthPct}%` }}
-            >
-              {c.creci && (
-                <span className="text-[10px] tracking-[0.2em] uppercase font-semibold text-primary block drop-shadow-md">
-                  {c.creci}
-                </span>
-              )}
-              <h2 className="font-serif text-2xl lg:text-3xl xl:text-4xl font-bold text-white leading-tight drop-shadow-lg">
-                {c.nome}
-              </h2>
-              {c.biografia_curta && (
-                <p className="text-stone-300 text-xs lg:text-sm leading-relaxed line-clamp-3 drop-shadow-md">
-                  {c.biografia_curta}
-                </p>
-              )}
-            </div>
-          );
-        })}
-      </div>
-
-      {/* ── Mobile: painéis empilhados verticalmente ── */}
-      <div className="absolute inset-0 flex flex-col md:hidden">
-        {corretores.map((c, i) => (
-          <div key={c.id} className="relative overflow-hidden" style={{ flex: 1 }}>
-            {c.foto_url ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={c.foto_url}
-                alt={c.nome}
-                className="w-full h-full object-cover object-top"
-              />
-            ) : (
+      {/* ── Caso N > 1: Textos sobrepostos em cada coluna correspondente ── */}
+      {N > 1 && (
+        <div className="absolute inset-0 z-20 pointer-events-none">
+          {corretores.map((c, i) => {
+            const panel = panelsWithCoords[i + 1];
+            const leftPct = panel.start + 1.0;
+            const widthPct = (panel.end - panel.start) - 2.0;
+            return (
               <div
-                className="w-full h-full"
-                style={{
-                  background: `linear-gradient(160deg, hsl(${20 + i * 35}, 12%, ${28 - i * 4}%), hsl(${20 + i * 35}, 12%, 10%))`,
-                }}
-              />
-            )}
-            {/* Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-stone-950/90 via-stone-900/50 to-transparent" />
-            {/* Info da corretora */}
-            <div className="absolute bottom-4 left-5 right-5 space-y-1">
-              {c.creci && (
-                <span className="text-[9px] tracking-widest uppercase font-semibold text-primary block">
-                  {c.creci}
-                </span>
-              )}
-              <h2 className="font-serif text-xl font-bold text-white leading-tight drop-shadow-md">
-                {c.nome}
-              </h2>
-              {c.biografia_curta && (
-                <p className="text-stone-300 text-xs leading-relaxed line-clamp-2">
-                  {c.biografia_curta}
-                </p>
-              )}
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Badge centralizado no topo (ambos layouts) */}
-      <div className="absolute top-28 left-0 right-0 z-30 flex justify-center pointer-events-none">
-        <div className="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-sm border border-primary/40 px-5 py-2.5 rounded-full shadow-lg">
-          <Award size={15} className="text-primary" />
-          <span className="text-[11px] tracking-[0.2em] uppercase font-semibold text-stone-200">
-            Atendimento Premium • {settings.creci}
-          </span>
+                key={c.id}
+                className="absolute bottom-36 md:bottom-40 space-y-1 md:space-y-2 px-3 md:px-5"
+                style={{ left: `${leftPct}%`, width: `${widthPct}%` }}
+              >
+                {c.creci && (
+                  <span className="text-[8px] md:text-[10px] tracking-[0.15em] md:tracking-[0.2em] uppercase font-semibold text-primary block drop-shadow-md">
+                    {c.creci}
+                  </span>
+                )}
+                <h2 className="font-serif text-base sm:text-lg md:text-2xl lg:text-3xl xl:text-4xl font-bold text-white leading-tight drop-shadow-lg">
+                  {c.nome}
+                </h2>
+                {c.biografia_curta && (
+                  <p className="text-stone-300 text-[9px] sm:text-xs md:text-sm leading-relaxed line-clamp-2 md:line-clamp-3 drop-shadow-md">
+                    {c.biografia_curta}
+                  </p>
+                )}
+              </div>
+            );
+          })}
         </div>
-      </div>
+      )}
+
+      {/* Badge centralizado no topo (se N > 1) */}
+      {N > 1 && (
+        <div className="absolute top-28 left-0 right-0 z-30 flex justify-center pointer-events-none">
+          <div className="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-sm border border-primary/40 px-5 py-2.5 rounded-full shadow-lg">
+            <Award size={15} className="text-primary" />
+            <span className="text-[11px] tracking-[0.2em] uppercase font-semibold text-stone-200">
+              Atendimento Premium • {settings.creci}
+            </span>
+          </div>
+        </div>
+      )}
 
       {/* Barra de Busca */}
       <div className="relative z-30 w-full max-w-6xl mx-auto px-6 pb-10">
