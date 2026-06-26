@@ -97,9 +97,9 @@ export default function AdminConfiguracoesPage() {
       const fileName = `${type}-${Date.now()}.${fileExt}`;
       const filePath = `settings/${fileName}`;
 
-      // Upload para o bucket público 'property-photos' (subpasta settings)
+      // Upload para o bucket público 'imoveis' (subpasta settings)
       const { error: uploadError } = await supabase.storage
-        .from('property-photos')
+        .from('imoveis')
         .upload(filePath, file);
 
       if (uploadError) {
@@ -108,7 +108,7 @@ export default function AdminConfiguracoesPage() {
 
       // Buscar URL pública do arquivo
       const { data: { publicUrl } } = supabase.storage
-        .from('property-photos')
+        .from('imoveis')
         .getPublicUrl(filePath);
 
       setUrl(publicUrl);
