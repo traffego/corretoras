@@ -1,6 +1,6 @@
 'use client';
 
-import Image from 'next/image';
+
 import Link from 'next/link';
 import { Award, ArrowRight } from 'lucide-react';
 import { SystemSettings } from '@/lib/supabase';
@@ -50,13 +50,11 @@ export default function HeroCorretores({
         {/* Foto como fundo full-screen */}
         <div className="absolute inset-0">
           {c.foto_url ? (
-            <Image
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
               src={c.foto_url}
               alt={c.nome}
-              fill
-              priority
-              sizes="100vw"
-              className="object-cover object-top"
+              className="w-full h-full object-cover object-top"
             />
           ) : (
             <div className="w-full h-full bg-gradient-to-br from-stone-800 to-stone-950" />
@@ -131,13 +129,11 @@ export default function HeroCorretores({
               style={{ clipPath, zIndex: i }}
             >
               {c.foto_url ? (
-                <Image
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
                   src={c.foto_url}
                   alt={c.nome}
-                  fill
-                  priority={i === 0}
-                  sizes="50vw"
-                  className="object-cover object-top"
+                  className="w-full h-full object-cover object-top"
                   style={{ objectPosition: `${((i + 0.5) / total) * 100}% top` }}
                 />
               ) : (
@@ -192,13 +188,11 @@ export default function HeroCorretores({
         {corretores.map((c, i) => (
           <div key={c.id} className="relative overflow-hidden" style={{ flex: 1 }}>
             {c.foto_url ? (
-              <Image
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
                 src={c.foto_url}
                 alt={c.nome}
-                fill
-                priority={i === 0}
-                sizes="100vw"
-                className="object-cover object-top"
+                className="w-full h-full object-cover object-top"
               />
             ) : (
               <div

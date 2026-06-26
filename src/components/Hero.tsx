@@ -1,4 +1,4 @@
-import Image from 'next/image';
+
 import Link from 'next/link';
 import { Award, ArrowRight } from 'lucide-react';
 import { SystemSettings } from '@/lib/supabase';
@@ -62,13 +62,11 @@ export default function Hero({ settings, bairros, condominios }: HeroProps) {
             {/* Foto principal */}
             <div className="absolute inset-0 rounded-t-[10rem] rounded-b-2xl overflow-hidden shadow-2xl bg-stone-100 border-4 border-white">
               {settings.foto_perfil_url ? (
-                <Image
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
                   src={settings.foto_perfil_url}
                   alt={settings.nome_corretora}
-                  fill
-                  priority
-                  sizes="(max-w-768px) 100vw, 400px"
-                  className="object-cover"
+                  className="w-full h-full object-cover"
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center bg-stone-200 text-stone-400 font-serif text-lg">
