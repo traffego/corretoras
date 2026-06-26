@@ -81,7 +81,7 @@ export default function HeroCorretores({
   });
 
   return (
-    <section className="relative min-h-screen flex flex-col justify-end overflow-hidden bg-stone-950">
+    <section className="relative min-h-[70vh] md:min-h-screen flex flex-col justify-end overflow-hidden bg-stone-950">
       {/* ── Painéis diagonais com clip-path ── */}
       <div className="absolute inset-0 flex">
         {panelsWithCoords.map((p, i) => {
@@ -189,7 +189,7 @@ export default function HeroCorretores({
             return (
               <div
                 key={c.id}
-                className="absolute bottom-40 md:bottom-44 space-y-1 md:space-y-2 px-2 md:px-5 text-center"
+                className="absolute bottom-32 md:bottom-44 space-y-1 md:space-y-2 px-2 md:px-5 text-center"
                 style={{ left: `${leftPct}%`, width: `${widthPct}%` }}
               >
                 {c.creci && (
