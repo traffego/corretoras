@@ -54,7 +54,7 @@ export default function HeroCorretores({
     panels.push({
       isBlurred: false,
       corretor: c,
-      weight: 2.5,
+      weight: 4,
     });
   });
 
@@ -81,7 +81,7 @@ export default function HeroCorretores({
   });
 
   return (
-    <section className="relative min-h-[70vh] md:min-h-screen flex flex-col justify-end overflow-hidden bg-stone-950">
+    <section className="relative min-h-[60vh] md:min-h-screen flex flex-col justify-end overflow-hidden bg-stone-950">
       {/* ── Painéis diagonais com clip-path ── */}
       <div className="absolute inset-0 flex">
         {panelsWithCoords.map((p, i) => {
@@ -141,7 +141,7 @@ export default function HeroCorretores({
       {N === 1 && (
         <div className="relative z-20 flex-1 flex flex-col items-center justify-end text-center px-6 pt-32 pb-8">
           {/* Badge CRECI */}
-          <div className="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-sm border border-primary/40 px-5 py-2.5 rounded-full shadow-lg mb-6">
+          <div className="hidden md:inline-flex items-center space-x-2 bg-white/10 backdrop-blur-sm border border-primary/40 px-5 py-2.5 rounded-full shadow-lg mb-6">
             <Award size={15} className="text-primary" />
             <span className="text-[11px] tracking-[0.2em] uppercase font-semibold text-stone-200">
               {corretores[0].creci || settings.creci}
@@ -213,7 +213,7 @@ export default function HeroCorretores({
 
       {/* Badge centralizado no topo (se N > 1) */}
       {N > 1 && (
-        <div className="absolute top-28 left-0 right-0 z-30 flex justify-center pointer-events-none">
+        <div className="absolute top-28 left-0 right-0 z-30 hidden md:flex justify-center pointer-events-none">
           <div className="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-sm border border-primary/40 px-5 py-2.5 rounded-full shadow-lg">
             <Award size={15} className="text-primary" />
             <span className="text-[11px] tracking-[0.2em] uppercase font-semibold text-stone-200">
