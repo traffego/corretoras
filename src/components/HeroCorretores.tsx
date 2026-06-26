@@ -189,19 +189,19 @@ export default function HeroCorretores({
             return (
               <div
                 key={c.id}
-                className="absolute bottom-36 md:bottom-40 space-y-1 md:space-y-2 px-3 md:px-5"
+                className="absolute bottom-40 md:bottom-44 space-y-1 md:space-y-2 px-2 md:px-5 text-center"
                 style={{ left: `${leftPct}%`, width: `${widthPct}%` }}
               >
                 {c.creci && (
-                  <span className="text-[8px] md:text-[10px] tracking-[0.15em] md:tracking-[0.2em] uppercase font-semibold text-primary block drop-shadow-md">
+                  <span className="text-[7px] md:text-[10px] tracking-[0.1em] md:tracking-[0.2em] uppercase font-semibold text-primary block drop-shadow-md">
                     {c.creci}
                   </span>
                 )}
-                <h2 className="font-serif text-base sm:text-lg md:text-2xl lg:text-3xl xl:text-4xl font-bold text-white leading-tight drop-shadow-lg">
+                <h2 className="font-serif text-xs sm:text-sm md:text-2xl lg:text-3xl xl:text-4xl font-bold text-white leading-tight drop-shadow-lg break-words">
                   {c.nome}
                 </h2>
                 {c.biografia_curta && (
-                  <p className="text-stone-300 text-[9px] sm:text-xs md:text-sm leading-relaxed line-clamp-2 md:line-clamp-3 drop-shadow-md">
+                  <p className="text-stone-300 text-[8px] sm:text-[10px] md:text-sm leading-relaxed line-clamp-2 md:line-clamp-3 drop-shadow-md">
                     {c.biografia_curta}
                   </p>
                 )}
