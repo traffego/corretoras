@@ -66,7 +66,7 @@ export default function Footer({ settings }: FooterProps) {
             </li>
             <li>
               <Link href="/sobre-mim" className="hover:text-primary transition duration-300">
-                Sobre Mim
+                Sobre Nós
               </Link>
             </li>
             <li>

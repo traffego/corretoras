@@ -30,7 +30,7 @@ export default function Header({ settings }: HeaderProps) {
   const navLinks = [
     { name: 'Início', href: '/' },
     { name: 'Imóveis', href: '/imoveis' },
-    { name: 'Sobre Mim', href: '/sobre-mim' },
+    { name: 'Sobre Nós', href: '/sobre-mim' },
     { name: 'Contato', href: '/contato' },
   ];
 
