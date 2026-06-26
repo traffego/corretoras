@@ -45,3 +45,6 @@ next-env.d.ts
 
 # scripts de seed e utilitários locais
 /scripts/
+
+# dados confidenciais
+data/auth_info

@@ -109,7 +109,7 @@ export default function HeroGallery({ settings, bairros, condominios, highlighte
           </button>
 
           {/* Indicadores */}
-          <div className="absolute bottom-64 left-1/2 -translate-x-1/2 z-20 flex space-x-2">
+          <div className="absolute bottom-[420px] md:bottom-64 left-1/2 -translate-x-1/2 z-20 flex space-x-2">
             {slides.map((_, i) => (
               <button
                 key={i}

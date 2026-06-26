@@ -42,8 +42,8 @@ export default function Header({ settings }: HeaderProps) {
   return (
     <header
       className={`sticky top-0 z-50 w-full transition-all duration-300 ${
-        isScrolled
-          ? 'glass shadow-md py-4'
+        isScrolled || isOpen
+          ? 'bg-[#faf8f5] shadow-md py-4'
           : 'bg-transparent py-6'
       }`}
     >
@@ -118,7 +118,7 @@ export default function Header({ settings }: HeaderProps) {
 
       {/* Mobile Menu */}
       {isOpen && (
-        <div className="md:hidden glass border-t border-stone-200/50 absolute top-full left-0 w-full py-6 px-6 space-y-4 shadow-xl transition-all duration-300 animate-in fade-in slide-in-from-top-5">
+        <div className="md:hidden bg-[#faf8f5] border-t border-stone-200/50 absolute top-full left-0 w-full py-6 px-6 space-y-4 shadow-xl transition-all duration-300 animate-in fade-in slide-in-from-top-5">
           <div className="flex flex-col space-y-4">
             {navLinks.map((link) => {
               const isActive = pathname === link.href;
