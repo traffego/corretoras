@@ -33,120 +33,154 @@ export default function SearchBar({ bairros, condominios }: SearchBarProps) {
     router.push(`/imoveis?${params.toString()}`);
   };
 
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
-    <form
-      onSubmit={handleSearch}
-      className="w-full glass-dark text-white rounded-2xl md:rounded-full p-4 md:py-3 md:px-6 shadow-2xl flex flex-col md:flex-row gap-4 items-center justify-between border border-stone-700/50"
-    >
-      {/* Finalidade: Venda / Aluguel */}
-      <div className="flex flex-col w-full md:w-auto border-b md:border-b-0 md:border-r border-stone-700/60 pb-3 md:pb-0 md:pr-4">
-        <label className="text-[10px] tracking-widest uppercase font-semibold text-primary mb-1">
-          Finalidade
-        </label>
-        <select
-          value={finalidade}
-          onChange={(e) => setFinalidade(e.target.value)}
-          className="bg-transparent border-0 text-sm font-medium focus:ring-0 focus:outline-none cursor-pointer pr-8 text-stone-200"
+    <div className="w-full">
+      {/* Botão de abrir (apenas mobile) */}
+      {!isOpen && (
+        <button
+          type="button"
+          onClick={() => setIsOpen(true)}
+          className="w-full md:hidden flex items-center justify-center space-x-2 bg-primary hover:bg-primary/95 active:scale-98 text-white py-4.5 rounded-2xl shadow-xl font-bold text-xs tracking-wider uppercase transition duration-300 cursor-pointer"
         >
-          <option value="venda" className="bg-stone-900 text-stone-200">Comprar</option>
-          <option value="aluguel" className="bg-stone-900 text-stone-200">Alugar</option>
-        </select>
-      </div>
+          <Search size={15} />
+          <span>Buscar Imóveis</span>
+        </button>
+      )}
 
-      {/* Tipo do Imóvel */}
-      <div className="flex flex-col w-full md:w-auto border-b md:border-b-0 md:border-r border-stone-700/60 pb-3 md:pb-0 md:pr-4">
-        <label className="text-[10px] tracking-widest uppercase font-semibold text-primary mb-1">
-          Tipo
-        </label>
-        <select
-          value={tipo}
-          onChange={(e) => setTipo(e.target.value)}
-          className="bg-transparent border-0 text-sm font-medium focus:ring-0 focus:outline-none cursor-pointer pr-8 text-stone-200"
-        >
-          <option value="" className="bg-stone-900 text-stone-200">Todos os tipos</option>
-          <option value="casa" className="bg-stone-900 text-stone-200">Casa</option>
-          <option value="sobrado" className="bg-stone-900 text-stone-200">Sobrado</option>
-          <option value="apartamento" className="bg-stone-900 text-stone-200">Apartamento</option>
-          <option value="terreno" className="bg-stone-900 text-stone-200">Terreno</option>
-        </select>
-      </div>
-
-      {/* Região (Bairro / Condomínio) */}
-      <div className="flex flex-col w-full md:w-auto border-b md:border-b-0 md:border-r border-stone-700/60 pb-3 md:pb-0 md:pr-4 flex-grow">
-        <label className="text-[10px] tracking-widest uppercase font-semibold text-primary mb-1">
-          Localização
-        </label>
-        <select
-          value={localizacao}
-          onChange={(e) => setLocalizacao(e.target.value)}
-          className="bg-transparent border-0 text-sm font-medium focus:ring-0 focus:outline-none cursor-pointer pr-8 text-stone-200 w-full"
-        >
-          <option value="" className="bg-stone-900 text-stone-200">Onde você deseja morar?</option>
-          {condominios.length > 0 && (
-            <optgroup label="Condomínios" className="bg-stone-900 text-primary">
-              {condominios.map((condo) => (
-                <option key={condo} value={`condo:${condo}`} className="text-stone-200 bg-stone-900">
-                  {condo}
-                </option>
-              ))}
-            </optgroup>
-          )}
-          {bairros.length > 0 && (
-            <optgroup label="Bairros" className="bg-stone-900 text-primary">
-              {bairros.map((bairro) => (
-                <option key={bairro} value={`bairro:${bairro}`} className="text-stone-200 bg-stone-900">
-                  {bairro}
-                </option>
-              ))}
-            </optgroup>
-          )}
-        </select>
-      </div>
-
-      {/* Busca por Código */}
-      <div className="flex flex-col w-full md:w-auto border-b md:border-b-0 md:border-r border-stone-700/60 pb-3 md:pb-0 md:pr-4">
-        <label className="text-[10px] tracking-widest uppercase font-semibold text-primary mb-1">
-          Código
-        </label>
-        <div className="flex items-center space-x-1.5">
-          <Hash size={13} className="text-stone-500 flex-shrink-0" />
-          <input
-            type="text"
-            value={codigoBusca}
-            onChange={(e) => setCodigoBusca(e.target.value.toUpperCase())}
-            placeholder="Ex: IMV-AB12"
-            className="bg-transparent border-0 text-sm font-mono font-medium focus:ring-0 focus:outline-none text-stone-200 placeholder:text-stone-500 w-28"
-          />
-        </div>
-      </div>
-
-      {/* Faixa de Preço Máximo */}
-      <div className="flex flex-col w-full md:w-auto pb-3 md:pb-0 md:pr-4">
-        <label className="text-[10px] tracking-widest uppercase font-semibold text-primary mb-1">
-          Preço Máximo
-        </label>
-        <select
-          value={precoMax}
-          onChange={(e) => setPrecoMax(e.target.value)}
-          className="bg-transparent border-0 text-sm font-medium focus:ring-0 focus:outline-none cursor-pointer pr-8 text-stone-200"
-        >
-          <option value="" className="bg-stone-900 text-stone-200">Qualquer valor</option>
-          <option value="500000" className="bg-stone-900 text-stone-200">Até R$ 500 Mil</option>
-          <option value="1000000" className="bg-stone-900 text-stone-200">Até R$ 1.0 Milhão</option>
-          <option value="2000000" className="bg-stone-900 text-stone-200">Até R$ 2.0 Milhões</option>
-          <option value="3000000" className="bg-stone-900 text-stone-200">Até R$ 3.0 Milhões</option>
-          <option value="5000000" className="bg-stone-900 text-stone-200">Até R$ 5.0 Milhões</option>
-        </select>
-      </div>
-
-      {/* Botão de Busca */}
-      <button
-        type="submit"
-        className="w-full md:w-11 md:h-11 bg-primary text-white py-4 md:py-0 rounded-xl md:rounded-full hover:scale-105 active:scale-95 transition-all duration-300 shadow-lg flex items-center justify-center space-x-2 font-medium text-sm flex-shrink-0"
+      {/* Formulário (sempre visível no desktop, condicional no mobile) */}
+      <form
+        onSubmit={handleSearch}
+        className={`w-full glass-dark text-white rounded-2xl md:rounded-full p-4 md:py-3 md:px-6 shadow-2xl border border-stone-700/50 transition-all duration-300 ${
+          isOpen ? 'flex flex-col md:flex-row gap-4' : 'hidden md:flex gap-4'
+        } items-center justify-between`}
       >
-        <Search size={16} />
-        <span className="md:hidden">Buscar Imóveis</span>
-      </button>
-    </form>
+        {isOpen && (
+          <div className="w-full flex items-center justify-between md:hidden pb-2 border-b border-stone-700/40 mb-1">
+            <span className="text-[10px] tracking-widest uppercase font-semibold text-stone-400">
+              Filtros de Busca
+            </span>
+            <button
+              type="button"
+              onClick={() => setIsOpen(false)}
+              className="text-[10px] text-stone-400 hover:text-white uppercase font-bold tracking-wider bg-white/5 border border-white/10 px-2.5 py-1 rounded-lg cursor-pointer"
+            >
+              Fechar
+            </button>
+          </div>
+        )}
+
+        {/* Finalidade: Venda / Aluguel */}
+        <div className="flex flex-col w-full md:w-auto border-b md:border-b-0 md:border-r border-stone-700/60 pb-3 md:pb-0 md:pr-4">
+          <label className="text-[10px] tracking-widest uppercase font-semibold text-primary mb-1">
+            Finalidade
+          </label>
+          <select
+            value={finalidade}
+            onChange={(e) => setFinalidade(e.target.value)}
+            className="bg-transparent border-0 text-sm font-medium focus:ring-0 focus:outline-none cursor-pointer pr-8 text-stone-200"
+          >
+            <option value="venda" className="bg-stone-900 text-stone-200">Comprar</option>
+            <option value="aluguel" className="bg-stone-900 text-stone-200">Alugar</option>
+          </select>
+        </div>
+
+        {/* Tipo do Imóvel */}
+        <div className="flex flex-col w-full md:w-auto border-b md:border-b-0 md:border-r border-stone-700/60 pb-3 md:pb-0 md:pr-4">
+          <label className="text-[10px] tracking-widest uppercase font-semibold text-primary mb-1">
+            Tipo
+          </label>
+          <select
+            value={tipo}
+            onChange={(e) => setTipo(e.target.value)}
+            className="bg-transparent border-0 text-sm font-medium focus:ring-0 focus:outline-none cursor-pointer pr-8 text-stone-200"
+          >
+            <option value="" className="bg-stone-900 text-stone-200">Todos os tipos</option>
+            <option value="casa" className="bg-stone-900 text-stone-200">Casa</option>
+            <option value="sobrado" className="bg-stone-900 text-stone-200">Sobrado</option>
+            <option value="apartamento" className="bg-stone-900 text-stone-200">Apartamento</option>
+            <option value="terreno" className="bg-stone-900 text-stone-200">Terreno</option>
+          </select>
+        </div>
+
+        {/* Região (Bairro / Condomínio) */}
+        <div className="flex flex-col w-full md:w-auto border-b md:border-b-0 md:border-r border-stone-700/60 pb-3 md:pb-0 md:pr-4 flex-grow">
+          <label className="text-[10px] tracking-widest uppercase font-semibold text-primary mb-1">
+            Localização
+          </label>
+          <select
+            value={localizacao}
+            onChange={(e) => setLocalizacao(e.target.value)}
+            className="bg-transparent border-0 text-sm font-medium focus:ring-0 focus:outline-none cursor-pointer pr-8 text-stone-200 w-full"
+          >
+            <option value="" className="bg-stone-900 text-stone-200">Onde você deseja morar?</option>
+            {condominios.length > 0 && (
+              <optgroup label="Condomínios" className="bg-stone-900 text-primary">
+                {condominios.map((condo) => (
+                  <option key={condo} value={`condo:${condo}`} className="text-stone-200 bg-stone-900">
+                    {condo}
+                  </option>
+                ))}
+              </optgroup>
+            )}
+            {bairros.length > 0 && (
+              <optgroup label="Bairros" className="bg-stone-900 text-primary">
+                {bairros.map((bairro) => (
+                  <option key={bairro} value={`bairro:${bairro}`} className="text-stone-200 bg-stone-900">
+                    {bairro}
+                  </option>
+                ))}
+              </optgroup>
+            )}
+          </select>
+        </div>
+
+        {/* Busca por Código */}
+        <div className="flex flex-col w-full md:w-auto border-b md:border-b-0 md:border-r border-stone-700/60 pb-3 md:pb-0 md:pr-4">
+          <label className="text-[10px] tracking-widest uppercase font-semibold text-primary mb-1">
+            Código
+          </label>
+          <div className="flex items-center space-x-1.5">
+            <Hash size={13} className="text-stone-500 flex-shrink-0" />
+            <input
+              type="text"
+              value={codigoBusca}
+              onChange={(e) => setCodigoBusca(e.target.value.toUpperCase())}
+              placeholder="Ex: IMV-AB12"
+              className="bg-transparent border-0 text-sm font-mono font-medium focus:ring-0 focus:outline-none text-stone-200 placeholder:text-stone-500 w-28"
+            />
+          </div>
+        </div>
+
+        {/* Faixa de Preço Máximo */}
+        <div className="flex flex-col w-full md:w-auto pb-3 md:pb-0 md:pr-4">
+          <label className="text-[10px] tracking-widest uppercase font-semibold text-primary mb-1">
+            Preço Máximo
+          </label>
+          <select
+            value={precoMax}
+            onChange={(e) => setPrecoMax(e.target.value)}
+            className="bg-transparent border-0 text-sm font-medium focus:ring-0 focus:outline-none cursor-pointer pr-8 text-stone-200"
+          >
+            <option value="" className="bg-stone-900 text-stone-200">Qualquer valor</option>
+            <option value="500000" className="bg-stone-900 text-stone-200">Até R$ 500 Mil</option>
+            <option value="1000000" className="bg-stone-900 text-stone-200">Até R$ 1.0 Milhão</option>
+            <option value="2000000" className="bg-stone-900 text-stone-200">Até R$ 2.0 Milhões</option>
+            <option value="3000000" className="bg-stone-900 text-stone-200">Até R$ 3.0 Milhões</option>
+            <option value="5000000" className="bg-stone-900 text-stone-200">Até R$ 5.0 Milhões</option>
+          </select>
+        </div>
+
+        {/* Botão de Busca */}
+        <button
+          type="submit"
+          className="w-full md:w-11 md:h-11 bg-primary text-white py-4 md:py-0 rounded-xl md:rounded-full hover:scale-105 active:scale-95 transition-all duration-300 shadow-lg flex items-center justify-center space-x-2 font-medium text-sm flex-shrink-0 cursor-pointer"
+        >
+          <Search size={16} />
+          <span className="md:hidden">Buscar Imóveis</span>
+        </button>
+      </form>
+    </div>
   );
 }
