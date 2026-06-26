@@ -18,7 +18,7 @@ export interface SystemSettings {
   biografia_longa: string;
   foto_perfil_url: string;
   logo_url: string;
-  hero_tipo: 'padrao' | 'wide' | 'galeria';
+  hero_tipo: 'padrao' | 'wide' | 'galeria' | 'corretores';
 }
 
 export const FALLBACK_SETTINGS: SystemSettings = {

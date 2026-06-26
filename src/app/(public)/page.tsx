@@ -90,6 +90,7 @@ export default async function Home() {
         bairros={bairros}
         condominios={condominios}
         highlightedProperties={highlightedProperties}
+        corretores={corretores}
       />
 
       {/* 2. Seção de Destaques */}

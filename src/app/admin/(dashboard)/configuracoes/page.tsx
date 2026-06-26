@@ -41,7 +41,7 @@ export default function AdminConfiguracoesPage() {
   const [biografiaLonga, setBiografiaLonga] = useState('');
   const [fotoPerfilUrl, setFotoPerfilUrl] = useState('');
   const [logoUrl, setLogoUrl] = useState('');
-  const [heroTipo, setHeroTipo] = useState<'padrao' | 'wide' | 'galeria'>('padrao');
+  const [heroTipo, setHeroTipo] = useState<'padrao' | 'wide' | 'galeria' | 'corretores'>('padrao');
 
   const [uploadingFoto, setUploadingFoto] = useState(false);
   const [uploadingLogo, setUploadingLogo] = useState(false);
@@ -68,7 +68,7 @@ export default function AdminConfiguracoesPage() {
           setBiografiaLonga(data.biografia_longa || '');
           setFotoPerfilUrl(data.foto_perfil_url || '');
           setLogoUrl(data.logo_url || '');
-          setHeroTipo((data.hero_tipo as 'padrao' | 'wide' | 'galeria') || 'padrao');
+          setHeroTipo((data.hero_tipo as 'padrao' | 'wide' | 'galeria' | 'corretores') || 'padrao');
         }
       } catch (err) {
         console.error(err);
@@ -469,6 +469,29 @@ export default function AdminConfiguracoesPage() {
                     <div className="w-4 h-1.5 rounded-full bg-[#c5a880]" />
                     <div className="w-1.5 h-1.5 rounded-full bg-white/40" />
                     <div className="w-1.5 h-1.5 rounded-full bg-white/40" />
+                  </div>
+                </div>
+              ),
+            },
+            {
+              value: 'corretores',
+              label: 'Corretoras',
+              desc: 'Fotos das corretoras em painéis diagonais',
+              preview: (
+                <div className="h-24 rounded-lg overflow-hidden relative flex">
+                  <div className="absolute inset-0 flex">
+                    <div className="flex-1 bg-gradient-to-br from-stone-600 to-stone-800" style={{ clipPath: 'polygon(0% 0%, 58% 0%, 42% 100%, 0% 100%)' }} />
+                    <div className="flex-1 bg-gradient-to-br from-stone-700 to-stone-900" style={{ clipPath: 'polygon(42% 0%, 100% 0%, 100% 100%, 58% 100%)', marginLeft: '-40%' }} />
+                  </div>
+                  <div className="relative z-10 flex items-end w-full px-2 pb-2 space-x-4">
+                    <div className="space-y-1 flex-1">
+                      <div className="h-1.5 w-3/4 bg-[#c5a880] rounded" />
+                      <div className="h-2.5 w-full bg-white/60 rounded" />
+                    </div>
+                    <div className="space-y-1 flex-1">
+                      <div className="h-1.5 w-3/4 bg-[#c5a880] rounded" />
+                      <div className="h-2.5 w-full bg-white/60 rounded" />
+                    </div>
                   </div>
                 </div>
               ),
