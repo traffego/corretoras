@@ -135,7 +135,7 @@ export default function Footer({ settings }: FooterProps) {
             <li className="flex items-start space-x-3">
               <MapPin size={16} className="text-primary mt-0.5 flex-shrink-0" />
               <span className="text-stone-400">
-                Atendimento na região e condomínios fechados
+                Rua Gurmecindo Antonietti Marques (4A), 430W ao lado do Que de minas - Jardim Acácia - CEP: 78.300-053
               </span>
             </li>
           </ul>

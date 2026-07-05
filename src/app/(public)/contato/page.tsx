@@ -93,10 +93,10 @@ export default async function ContatoPage() {
               </div>
               <div className="space-y-1">
                 <span className="text-[10px] tracking-wider uppercase font-semibold text-stone-400 block">
-                  Área de Atendimento
+                  Endereço do Escritório
                 </span>
                 <span className="text-sm font-semibold text-secondary">
-                  Região e condomínios fechados.
+                  Rua Gurmecindo Antonietti Marques (4A), 430W ao lado do Que de minas - Jardim Acácia - CEP: 78.300-053
                 </span>
               </div>
             </div>
