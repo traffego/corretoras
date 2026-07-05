@@ -12,10 +12,10 @@ export default async function PublicLayout({
 }>) {
   const settings = await getSettings();
 
-  // Buscar corretores ativos para exibição no WhatsApp
+  // Buscar corretores ativos para exibição no WhatsApp e CRECI
   const { data: corretoresData } = await supabase
     .from('corretores')
-    .select('nome, whatsapp, foto_url')
+    .select('nome, whatsapp, foto_url, creci')
     .eq('ativo', true)
     .order('ordem', { ascending: true });
 
