@@ -53,6 +53,25 @@ export default function Footer({ settings, corretores = [] }: FooterProps) {
           <p className="text-sm text-stone-400 leading-relaxed max-w-sm">
             {settings.biografia_curta}
           </p>
+          <div className="space-y-1.5 pt-2 border-t border-stone-800/40">
+            {corretores.length > 0 ? (
+              corretores.map((c, idx) => (
+                c.creci && (
+                  <div key={idx} className="flex items-center space-x-2 text-xs text-stone-500">
+                    <ShieldAlert size={12} className="text-primary flex-shrink-0" />
+                    <span>
+                      <strong className="text-stone-400 font-medium">{c.nome.split(' ')[0]}:</strong> {c.creci}
+                    </span>
+                  </div>
+                )
+              ))
+            ) : (
+              <div className="flex items-center space-x-2 text-xs text-stone-500">
+                <ShieldAlert size={12} className="text-primary flex-shrink-0" />
+                <span>{settings.creci}</span>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Col 2: Navigation */}
@@ -128,12 +147,6 @@ export default function Footer({ settings, corretores = [] }: FooterProps) {
                     <span className="block text-xs font-semibold text-white">
                       {c.nome}
                     </span>
-                    {c.creci && (
-                      <div className="flex items-center space-x-2 text-[11px] text-stone-400">
-                        <ShieldAlert size={12} className="text-primary flex-shrink-0" />
-                        <span>{c.creci}</span>
-                      </div>
-                    )}
                     <div className="flex items-center space-x-2 text-[11px] text-stone-450">
                       <Phone size={12} className="text-primary flex-shrink-0" />
                       <a
