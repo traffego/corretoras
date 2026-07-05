@@ -53,22 +53,22 @@ export default function Footer({ settings, corretores = [] }: FooterProps) {
           <p className="text-sm text-stone-400 leading-relaxed max-w-sm">
             {settings.biografia_curta}
           </p>
-          <div className="space-y-1.5 pt-2 border-t border-stone-800/40">
+          <div className="flex flex-wrap gap-2 pt-3 border-t border-stone-800/40">
             {corretores.length > 0 ? (
               corretores.map((c, idx) => (
                 c.creci && (
-                  <div key={idx} className="flex items-center space-x-2 text-xs text-stone-500">
-                    <ShieldAlert size={12} className="text-primary flex-shrink-0" />
+                  <div key={idx} className="inline-flex items-center space-x-1.5 text-xs text-stone-200 bg-stone-800/50 border border-stone-700/30 px-2.5 py-1 rounded-md shadow-sm">
+                    <ShieldAlert size={11} className="text-primary flex-shrink-0" />
                     <span>
-                      <strong className="text-stone-400 font-medium">{c.nome.split(' ')[0]}:</strong> {c.creci}
+                      <span className="text-stone-450 font-medium">{c.nome.split(' ')[0]}:</span> <span className="font-semibold text-stone-200">{c.creci}</span>
                     </span>
                   </div>
                 )
               ))
             ) : (
-              <div className="flex items-center space-x-2 text-xs text-stone-500">
-                <ShieldAlert size={12} className="text-primary flex-shrink-0" />
-                <span>{settings.creci}</span>
+              <div className="inline-flex items-center space-x-1.5 text-xs text-stone-200 bg-stone-800/50 border border-stone-700/30 px-2.5 py-1 rounded-md shadow-sm">
+                <ShieldAlert size={11} className="text-primary flex-shrink-0" />
+                <span className="font-semibold text-stone-200">{settings.creci}</span>
               </div>
             )}
           </div>
