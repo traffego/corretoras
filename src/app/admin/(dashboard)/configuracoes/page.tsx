@@ -597,7 +597,7 @@ export default function AdminConfiguracoesPage() {
                 <input
                   type="range"
                   min="0.05"
-                  max="0.6"
+                  max="0.9"
                   step="0.05"
                   value={marcaAguaTamanho}
                   onChange={(e) => setMarcaAguaTamanho(parseFloat(e.target.value))}
