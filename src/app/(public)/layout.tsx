@@ -25,7 +25,7 @@ export default async function PublicLayout({
     <>
       <Header settings={settings} corretores={corretores} />
       <main className="flex-grow">{children}</main>
-      <Footer settings={settings} />
+      <Footer settings={settings} corretores={corretores} />
       <WhatsAppButton settings={settings} corretores={corretores} />
     </>
   );
