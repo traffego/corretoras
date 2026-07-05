@@ -99,7 +99,7 @@ export default function PropertyCard({ property }: PropertyCardProps) {
       <div className="p-6 flex flex-col flex-grow justify-between space-y-4">
         <div className="space-y-2">
           {/* Preço */}
-          <div className="text-xl font-bold text-secondary font-serif">
+          <div className="text-xl font-bold text-secondary font-sans tracking-tight">
             {formatPrice(property.preco)}
           </div>
 

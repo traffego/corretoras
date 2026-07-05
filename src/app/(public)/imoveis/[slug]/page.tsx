@@ -132,7 +132,7 @@ export default async function ImovelDetailPage({ params }: ImovelDetailPageProps
           <span className="text-[10px] tracking-widest uppercase font-semibold text-stone-400">
             Valor do Imóvel
           </span>
-          <div className="text-3xl sm:text-4xl font-serif font-bold text-primary">
+          <div className="text-3xl sm:text-4xl font-sans font-bold text-primary tracking-tight">
             {priceFormatted}
           </div>
         </div>
