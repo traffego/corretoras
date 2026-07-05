@@ -5,15 +5,27 @@ import { ArrowRight, Award } from 'lucide-react';
 import { SystemSettings } from '@/lib/supabase';
 import SearchBar from './SearchBar';
 import { useEffect, useRef } from 'react';
+import { Corretor } from './CorretoresCarousel';
 
 interface HeroWideProps {
   settings: SystemSettings;
   bairros: string[];
   condominios: string[];
+  corretores?: Corretor[];
 }
 
-export default function HeroWide({ settings, bairros, condominios }: HeroWideProps) {
+export default function HeroWide({ settings, bairros, condominios, corretores = [] }: HeroWideProps) {
   const videoRef = useRef<HTMLDivElement>(null);
+
+  const getCreciString = () => {
+    if (corretores && corretores.length > 0) {
+      const activeCrecis = corretores.map(c => c.creci).filter(Boolean);
+      if (activeCrecis.length > 0) {
+        return activeCrecis.join(' / ');
+      }
+    }
+    return settings.creci;
+  };
 
   // Parallax sutil no scroll
   useEffect(() => {
@@ -53,7 +65,7 @@ export default function HeroWide({ settings, bairros, condominios }: HeroWidePro
         <div className="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-sm border border-primary/30 px-5 py-2.5 rounded-full shadow-lg mb-8">
           <Award size={15} className="text-primary" />
           <span className="text-[11px] tracking-[0.2em] uppercase font-semibold text-stone-200">
-            Atendimento Premium • {settings.creci}
+            Atendimento Premium • {getCreciString()}
           </span>
         </div>
 

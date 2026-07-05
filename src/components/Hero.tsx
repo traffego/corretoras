@@ -3,14 +3,26 @@ import Link from 'next/link';
 import { Award, ArrowRight } from 'lucide-react';
 import { SystemSettings } from '@/lib/supabase';
 import SearchBar from './SearchBar';
+import { Corretor } from './CorretoresCarousel';
 
 interface HeroProps {
   settings: SystemSettings;
   bairros: string[];
   condominios: string[];
+  corretores?: Corretor[];
 }
 
-export default function Hero({ settings, bairros, condominios }: HeroProps) {
+export default function Hero({ settings, bairros, condominios, corretores = [] }: HeroProps) {
+  const getCreciString = () => {
+    if (corretores && corretores.length > 0) {
+      const activeCrecis = corretores.map(c => c.creci).filter(Boolean);
+      if (activeCrecis.length > 0) {
+        return activeCrecis.join(' / ');
+      }
+    }
+    return settings.creci;
+  };
+
   return (
     <section className="relative min-h-[90vh] flex flex-col justify-center pt-8 pb-16 bg-gradient-to-b from-[#f5eee6] to-[#faf8f5]">
       {/* Elementos decorativos */}
@@ -24,7 +36,7 @@ export default function Hero({ settings, bairros, condominios }: HeroProps) {
           <div className="inline-flex items-center space-x-2 bg-white/80 border border-primary/20 px-4 py-2 rounded-full shadow-sm">
             <Award size={16} className="text-primary" />
             <span className="text-[11px] tracking-wider uppercase font-semibold text-secondary">
-              Atendimento Premium • {settings.creci}
+              Atendimento Premium • {getCreciString()}
             </span>
           </div>
 

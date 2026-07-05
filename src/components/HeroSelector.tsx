@@ -36,7 +36,7 @@ export default function HeroSelector({
   const tipo = settings.hero_tipo || 'padrao';
 
   if (tipo === 'wide') {
-    return <HeroWide settings={settings} bairros={bairros} condominios={condominios} />;
+    return <HeroWide settings={settings} bairros={bairros} condominios={condominios} corretores={corretores} />;
   }
 
   if (tipo === 'galeria') {
@@ -46,6 +46,7 @@ export default function HeroSelector({
         bairros={bairros}
         condominios={condominios}
         highlightedProperties={highlightedProperties}
+        corretores={corretores}
       />
     );
   }
@@ -62,5 +63,5 @@ export default function HeroSelector({
   }
 
   // padrão
-  return <Hero settings={settings} bairros={bairros} condominios={condominios} />;
+  return <Hero settings={settings} bairros={bairros} condominios={condominios} corretores={corretores} />;
 }

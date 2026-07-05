@@ -5,6 +5,7 @@ import { ArrowRight, Award, ChevronLeft, ChevronRight } from 'lucide-react';
 import { SystemSettings } from '@/lib/supabase';
 import SearchBar from './SearchBar';
 import { useState, useEffect, useCallback } from 'react';
+import { Corretor } from './CorretoresCarousel';
 
 interface PropertyImage {
   url: string;
@@ -24,11 +25,22 @@ interface HeroGalleryProps {
   bairros: string[];
   condominios: string[];
   highlightedProperties: Property[];
+  corretores?: Corretor[];
 }
 
-export default function HeroGallery({ settings, bairros, condominios, highlightedProperties }: HeroGalleryProps) {
+export default function HeroGallery({ settings, bairros, condominios, highlightedProperties, corretores = [] }: HeroGalleryProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
+
+  const getCreciString = () => {
+    if (corretores && corretores.length > 0) {
+      const activeCrecis = corretores.map(c => c.creci).filter(Boolean);
+      if (activeCrecis.length > 0) {
+        return activeCrecis.join(' / ');
+      }
+    }
+    return settings.creci;
+  };
 
   // Montar lista de imagens a partir dos imóveis em destaque
   const slides = highlightedProperties
@@ -130,7 +142,7 @@ export default function HeroGallery({ settings, bairros, condominios, highlighte
         <div className="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-sm border border-primary/40 px-5 py-2.5 rounded-full shadow-lg mb-8">
           <Award size={15} className="text-primary" />
           <span className="text-[11px] tracking-[0.2em] uppercase font-semibold text-stone-200">
-            Atendimento Premium • {settings.creci}
+            Atendimento Premium • {getCreciString()}
           </span>
         </div>
 
