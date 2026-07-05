@@ -118,29 +118,6 @@ export default function WhatsAppButton({ settings, corretores = [] }: WhatsAppBu
                 </div>
               </a>
             ))}
-
-            {/* Escritório Central */}
-            {settings.whatsapp && (
-              <a
-                href={urlEscritorio}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => setMenuOpen(false)}
-                className="flex items-center space-x-3 p-3 rounded-xl hover:bg-white hover:shadow-sm border border-transparent hover:border-stone-100 transition duration-300 group pt-2.5 border-t border-stone-100"
-              >
-                <div className="w-10 h-10 rounded-full bg-primary/10 border border-primary/20 flex-shrink-0 flex items-center justify-center text-primary">
-                  <MessageCircle size={18} />
-                </div>
-                <div className="flex-grow">
-                  <span className="block text-xs font-semibold text-secondary group-hover:text-primary transition">
-                    {settings.nome_corretora}
-                  </span>
-                  <span className="block text-[9px] text-stone-400 uppercase tracking-wider mt-0.5">
-                    Escritório Central
-                  </span>
-                </div>
-              </a>
-            )}
           </div>
         </div>
       )}
