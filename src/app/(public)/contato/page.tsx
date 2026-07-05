@@ -20,15 +20,16 @@ export default async function ContatoPage() {
 
   const corretores = corretoresData || [];
 
-  const formatWhatsAppNumber = (num: string) => {
+  const formatWhatsAppNumber = (num: string, nome?: string) => {
     const cleanNum = num.replace(/\D/g, '');
     let display = num;
     if (cleanNum.length === 13 && cleanNum.startsWith('55')) {
       const parts = cleanNum.slice(2);
       display = `(${parts.slice(0, 2)}) ${parts.slice(2, 7)}-${parts.slice(7)}`;
     }
+    const saudacao = nome ? `Olá%20${nome.split(' ')[0]}` : 'Olá';
     return {
-      link: `https://wa.me/${cleanNum}`,
+      link: `https://wa.me/${cleanNum}?text=${saudacao},%20vi%20o%20seu%20site%20imobiliário%20e%20gostaria%20de%20conversar.`,
       display,
     };
   };
@@ -84,7 +85,7 @@ export default async function ContatoPage() {
                 {corretoresComWhats.length > 0 ? (
                   <div className="flex flex-col space-y-2">
                     {corretoresComWhats.map((c, idx) => {
-                      const info = formatWhatsAppNumber(c.whatsapp!);
+                      const info = formatWhatsAppNumber(c.whatsapp!, c.nome);
                       return (
                         <a
                           key={idx}

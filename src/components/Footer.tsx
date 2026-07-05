@@ -10,15 +10,16 @@ interface FooterProps {
 export default function Footer({ settings, corretores = [] }: FooterProps) {
   const currentYear = new Date().getFullYear();
 
-  const formatWhatsAppNumber = (num: string) => {
+  const formatWhatsAppNumber = (num: string, nome?: string) => {
     const cleanNum = num.replace(/\D/g, '');
     let display = num;
     if (cleanNum.length === 13 && cleanNum.startsWith('55')) {
       const parts = cleanNum.slice(2);
       display = `(${parts.slice(0, 2)}) ${parts.slice(2, 7)}-${parts.slice(7)}`;
     }
+    const saudacao = nome ? `Olá%20${nome.split(' ')[0]}` : 'Olá';
     return {
-      link: `https://wa.me/${cleanNum}`,
+      link: `https://wa.me/${cleanNum}?text=${saudacao},%20vi%20o%20seu%20site%20imobiliário%20e%20gostaria%20de%20conversar.`,
       display,
     };
   };
@@ -141,7 +142,7 @@ export default function Footer({ settings, corretores = [] }: FooterProps) {
             {corretores.length > 0 ? (
               corretores.map((c, idx) => {
                 const hasWhats = c.whatsapp && c.whatsapp.trim() !== '';
-                const whats = hasWhats ? formatWhatsAppNumber(c.whatsapp!) : whatsInfo;
+                const whats = hasWhats ? formatWhatsAppNumber(c.whatsapp!, c.nome) : whatsInfo;
                 return (
                   <div key={idx} className="space-y-1.5 border-b border-stone-850 pb-3.5 last:border-0 last:pb-0">
                     <span className="block text-xs font-semibold text-white">
