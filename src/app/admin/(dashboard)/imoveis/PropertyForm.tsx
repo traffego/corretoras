@@ -150,9 +150,9 @@ export default function PropertyForm({
         const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 11)}.${fileExt}`;
         const filePath = `properties/${fileName}`;
 
-        // Fazer upload para o bucket público 'property-photos'
+        // Fazer upload para o bucket público 'imoveis'
         const { error: uploadError } = await supabase.storage
-          .from('property-photos')
+          .from('imoveis')
           .upload(filePath, fileToUpload);
 
         if (uploadError) {
@@ -161,7 +161,7 @@ export default function PropertyForm({
 
         // Buscar a URL pública do arquivo
         const { data: { publicUrl } } = supabase.storage
-          .from('property-photos')
+          .from('imoveis')
           .getPublicUrl(filePath);
 
         newImages.push({
