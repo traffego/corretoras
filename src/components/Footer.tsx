@@ -53,10 +53,6 @@ export default function Footer({ settings, corretores = [] }: FooterProps) {
           <p className="text-sm text-stone-400 leading-relaxed max-w-sm">
             {settings.biografia_curta}
           </p>
-          <div className="inline-flex items-center space-x-2 text-xs text-stone-500 bg-stone-800/50 px-3 py-1.5 rounded">
-            <ShieldAlert size={12} className="text-primary" />
-            <span>{getCreciString()}</span>
-          </div>
         </div>
 
         {/* Col 2: Navigation */}
@@ -122,27 +118,39 @@ export default function Footer({ settings, corretores = [] }: FooterProps) {
           <h3 className="font-serif text-lg font-medium text-white tracking-wide">
             Contatos
           </h3>
-          <ul className="space-y-3 text-sm">
-            {corretoresComWhats.length > 0 ? (
-              corretoresComWhats.map((c, idx) => {
-                const info = formatWhatsAppNumber(c.whatsapp!);
+          <div className="space-y-5">
+            {corretores.length > 0 ? (
+              corretores.map((c, idx) => {
+                const hasWhats = c.whatsapp && c.whatsapp.trim() !== '';
+                const whats = hasWhats ? formatWhatsAppNumber(c.whatsapp!) : whatsInfo;
                 return (
-                  <li key={idx} className="flex items-start space-x-3">
-                    <Phone size={16} className="text-primary mt-0.5 flex-shrink-0" />
-                    <a
-                      href={info.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="hover:text-primary transition duration-300"
-                    >
-                      {info.display} ({c.nome.split(' ')[0]})
-                    </a>
-                  </li>
+                  <div key={idx} className="space-y-1.5 border-b border-stone-850 pb-3.5 last:border-0 last:pb-0">
+                    <span className="block text-xs font-semibold text-white">
+                      {c.nome}
+                    </span>
+                    {c.creci && (
+                      <div className="flex items-center space-x-2 text-[11px] text-stone-400">
+                        <ShieldAlert size={12} className="text-primary flex-shrink-0" />
+                        <span>{c.creci}</span>
+                      </div>
+                    )}
+                    <div className="flex items-center space-x-2 text-[11px] text-stone-450">
+                      <Phone size={12} className="text-primary flex-shrink-0" />
+                      <a
+                        href={whats.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="hover:text-primary transition duration-300 font-medium"
+                      >
+                        {whats.display}
+                      </a>
+                    </div>
+                  </div>
                 );
               })
             ) : (
-              <li className="flex items-start space-x-3">
-                <Phone size={16} className="text-primary mt-0.5 flex-shrink-0" />
+              <div className="flex items-center space-x-2 text-xs text-stone-400">
+                <Phone size={14} className="text-primary flex-shrink-0" />
                 <a
                   href={whatsInfo.link}
                   target="_blank"
@@ -151,24 +159,28 @@ export default function Footer({ settings, corretores = [] }: FooterProps) {
                 >
                   {whatsInfo.display}
                 </a>
-              </li>
+              </div>
             )}
-            <li className="flex items-start space-x-3">
-              <Mail size={16} className="text-primary mt-0.5 flex-shrink-0" />
+
+            {/* Email */}
+            <div className="flex items-center space-x-2 text-xs text-stone-400 pt-3 border-t border-stone-800/60">
+              <Mail size={14} className="text-primary flex-shrink-0" />
               <a
                 href={`mailto:${settings.email_destino}`}
                 className="hover:text-primary transition duration-300 break-all"
               >
                 {settings.email_destino}
               </a>
-            </li>
-            <li className="flex items-start space-x-3">
-              <MapPin size={16} className="text-primary mt-0.5 flex-shrink-0" />
-              <span className="text-stone-400">
+            </div>
+
+            {/* Endereço */}
+            <div className="flex items-start space-x-2 text-xs text-stone-400">
+              <MapPin size={14} className="text-primary mt-0.5 flex-shrink-0" />
+              <span className="leading-relaxed">
                 Rua Gurmecindo Antonietti Marques (4A), 430W ao lado do Que de minas - Jardim Acácia - CEP: 78.300-053
               </span>
-            </li>
-          </ul>
+            </div>
+          </div>
         </div>
       </div>
 
