@@ -49,33 +49,18 @@ export default function HeroCorretores({
   const N = corretores.length;
   if (N === 0) return null;
 
-  // Montar os painéis: esquerdo (borrado), corretores normais, direito (borrado)
-  const panels = [];
+  // Montar apenas os painéis normais dos corretores (sem as laterais borradas)
+  const panels: any[] = [];
   
-  // Painel esquerdo (borrado, reflete primeiro corretor)
-  panels.push({
-    isBlurred: true,
-    corretor: corretores[0],
-    weight: 1,
-  });
-
-  // Painéis centrais (normais)
   corretores.forEach((c) => {
     panels.push({
       isBlurred: false,
       corretor: c,
-      weight: 4,
+      weight: 1,
     });
   });
 
-  // Painel direito (borrado, reflete último corretor)
-  panels.push({
-    isBlurred: true,
-    corretor: corretores[N - 1],
-    weight: 1,
-  });
-
-  const total = N + 2;
+  const total = N;
   const totalWeight = panels.reduce((sum, p) => sum + p.weight, 0);
   
   let currentStart = 0;
@@ -193,7 +178,7 @@ export default function HeroCorretores({
       {N > 1 && (
         <div className="absolute inset-0 z-20 pointer-events-none">
           {corretores.map((c, i) => {
-            const panel = panelsWithCoords[i + 1];
+            const panel = panelsWithCoords[i];
             const leftPct = panel.start + 1.0;
             const widthPct = (panel.end - panel.start) - 2.0;
             return (
