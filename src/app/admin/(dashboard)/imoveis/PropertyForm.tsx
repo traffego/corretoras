@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
+import { applyWatermark, type WatermarkSettings } from '@/lib/watermark';
 import { ArrowLeft, Save, Trash2, ArrowUp, ArrowDown, Plus, Loader2, Image as ImageIcon, X, ChevronDown } from 'lucide-react';
 import Image from 'next/image';
 import { ICONES_ATRIBUTO, getIconeComponente, type Atributo } from '@/components/AtributosImovel';
@@ -84,6 +85,7 @@ export default function PropertyForm({
   // Images state
   const [images, setImages] = useState<PropertyImage[]>(initialImages);
   const [uploadingImages, setUploadingImages] = useState(false);
+  const [watermarkSettings, setWatermarkSettings] = useState<WatermarkSettings | null>(null);
 
   // Auto-gerar slug a partir do título
   useEffect(() => {
@@ -99,6 +101,33 @@ export default function PropertyForm({
     }
   }, [titulo, isEditMode]);
 
+  // Carregar configurações de marca d'água
+  useEffect(() => {
+    const fetchWatermarkSettings = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('settings')
+          .select('marca_agua_url, marca_agua_posicao, marca_agua_opacidade, marca_agua_tamanho, marca_agua_ativa')
+          .eq('id', 1)
+          .single();
+
+        if (!error && data) {
+          setWatermarkSettings({
+            marca_agua_url: data.marca_agua_url,
+            marca_agua_posicao: (data.marca_agua_posicao as any) || 'canto-inferior-direito',
+            marca_agua_opacidade: data.marca_agua_opacidade !== null ? Number(data.marca_agua_opacidade) : 0.3,
+            marca_agua_tamanho: data.marca_agua_tamanho !== null ? Number(data.marca_agua_tamanho) : 0.2,
+            marca_agua_ativa: !!data.marca_agua_ativa,
+          });
+        }
+      } catch (err) {
+        console.error('Erro ao buscar configurações de marca d\'água:', err);
+      }
+    };
+
+    fetchWatermarkSettings();
+  }, []);
+
   // Upload local de fotos para o bucket do Supabase
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || e.target.files.length === 0) return;
@@ -111,14 +140,20 @@ export default function PropertyForm({
 
     for (const file of files) {
       try {
-        const fileExt = file.name.split('.').pop();
+        // Aplicar marca d'água se estiver ativa nas configurações
+        let fileToUpload = file;
+        if (watermarkSettings?.marca_agua_ativa) {
+          fileToUpload = await applyWatermark(file, watermarkSettings);
+        }
+
+        const fileExt = fileToUpload.name.split('.').pop();
         const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 11)}.${fileExt}`;
         const filePath = `properties/${fileName}`;
 
         // Fazer upload para o bucket público 'property-photos'
         const { error: uploadError } = await supabase.storage
           .from('property-photos')
-          .upload(filePath, file);
+          .upload(filePath, fileToUpload);
 
         if (uploadError) {
           throw new Error('Falha no upload: ' + uploadError.message);
