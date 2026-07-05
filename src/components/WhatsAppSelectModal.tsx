@@ -1,6 +1,8 @@
 'use client';
 
-import { X, MessageCircle, User } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
+import { X, User } from 'lucide-react';
 
 interface Corretor {
   nome: string;
@@ -24,7 +26,15 @@ export default function WhatsAppSelectModal({
   corretores,
   settings,
 }: WhatsAppSelectModalProps) {
-  if (!open) return null;
+  const [mounted, setMounted] = useState(false);
+
+  // Monitorar montagem do componente no cliente
+  useEffect(() => {
+    setMounted(true);
+    return () => setMounted(false);
+  }, []);
+
+  if (!open || !mounted) return null;
 
   // Filtrar corretores ativos que possuem WhatsApp cadastrado
   const corretoresComWhats = corretores.filter((c) => c.whatsapp && c.whatsapp.trim() !== '');
@@ -40,8 +50,8 @@ export default function WhatsAppSelectModal({
     onClose();
   };
 
-  return (
-    <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4">
+  return createPortal(
+    <div className="fixed inset-0 z-[999999] flex items-center justify-center p-4">
       {/* Backdrop com z-index alto para garantir que cubra tudo */}
       <div
         className="absolute inset-0 bg-black/60 backdrop-blur-sm"
@@ -49,7 +59,7 @@ export default function WhatsAppSelectModal({
       />
 
       {/* Janela do Modal */}
-      <div className="relative bg-white rounded-3xl shadow-2xl w-full max-w-sm p-6 sm:p-8 space-y-6 animate-in zoom-in-95 duration-200 z-[100000]">
+      <div className="relative bg-white rounded-3xl shadow-2xl w-full max-w-sm p-6 sm:p-8 space-y-6 animate-in zoom-in-95 duration-200 z-[1000000]">
         {/* Botão de Fechar */}
         <button
           type="button"
@@ -106,6 +116,7 @@ export default function WhatsAppSelectModal({
           Você será redirecionado com segurança para o aplicativo do WhatsApp.
         </p>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

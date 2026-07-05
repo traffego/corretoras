@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { X, User, Phone, Loader2, CheckCircle2 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 
@@ -42,6 +43,13 @@ export default function LeadModal({
   const [saving, setSaving] = useState(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState('');
+  const [mounted, setMounted] = useState(false);
+
+  // Monitorar montagem do componente no cliente
+  useEffect(() => {
+    setMounted(true);
+    return () => setMounted(false);
+  }, []);
 
   // Filtrar corretores ativos que possuem WhatsApp
   const corretoresComWhats = corretores.filter((c) => c.whatsapp && c.whatsapp.trim() !== '');
@@ -56,7 +64,7 @@ export default function LeadModal({
     }
   }, [corretores]);
 
-  if (!open) return null;
+  if (!open || !mounted) return null;
 
   const formatTelefone = (val: string) => {
     const d = val.replace(/\D/g, '').slice(0, 11);
@@ -106,16 +114,16 @@ export default function LeadModal({
     }, 600);
   };
 
-  return (
-    <div className="fixed inset-0 z-[999] flex items-center justify-center p-4">
+  return createPortal(
+    <div className="fixed inset-0 z-[999999] flex items-center justify-center p-4">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
         onClick={onClose}
       />
 
       {/* Modal */}
-      <div className="relative bg-white rounded-3xl shadow-2xl w-full max-w-md p-8 space-y-6 animate-in zoom-in-95 duration-200">
+      <div className="relative bg-white rounded-3xl shadow-2xl w-full max-w-md p-8 space-y-6 animate-in zoom-in-95 duration-200 z-[1000000]">
         {/* Fechar */}
         <button
           type="button"
@@ -254,6 +262,7 @@ export default function LeadModal({
           </form>
         )}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
