@@ -14,6 +14,7 @@ interface Corretor {
   id: string;
   nome: string;
   creci: string;
+  whatsapp?: string | null;
   biografia_curta: string;
   biografia_longa: string;
   foto_url: string;
@@ -26,6 +27,7 @@ interface Corretor {
 const EMPTY = {
   nome: '',
   creci: '',
+  whatsapp: '',
   biografia_curta: '',
   biografia_longa: '',
   foto_url: '',
@@ -70,6 +72,7 @@ export default function AdminCorretoresPage() {
     setForm({
       nome: c.nome,
       creci: c.creci || '',
+      whatsapp: c.whatsapp || '',
       biografia_curta: c.biografia_curta || '',
       biografia_longa: c.biografia_longa || '',
       foto_url: c.foto_url || '',
@@ -229,6 +232,15 @@ export default function AdminCorretoresPage() {
                 onChange={e => setForm(f => ({ ...f, especialidade: e.target.value }))}
                 className="bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm focus:ring-1 focus:ring-primary focus:outline-none"
                 placeholder="Ex: Alto Padrão e Condomínios"
+              />
+            </div>
+            <div className="flex flex-col">
+              <label className="text-[10px] tracking-widest uppercase font-semibold text-stone-400 mb-1.5">WhatsApp (com DDI e DDD)</label>
+              <input
+                value={form.whatsapp}
+                onChange={e => setForm(f => ({ ...f, whatsapp: e.target.value }))}
+                className="bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm focus:ring-1 focus:ring-primary focus:outline-none"
+                placeholder="Ex: 5566999999999"
               />
             </div>
             <div className="flex flex-col">

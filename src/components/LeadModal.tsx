@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { X, User, Phone, Loader2, CheckCircle2, MessageCircle } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { X, User, Phone, Loader2, CheckCircle2 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 
 export interface LeadContext {
@@ -11,13 +11,21 @@ export interface LeadContext {
   imovelTitulo?: string;
 }
 
+interface Corretor {
+  id?: string;
+  nome: string;
+  whatsapp?: string | null;
+  foto_url?: string | null;
+}
+
 interface LeadModalProps {
   open: boolean;
   onClose: () => void;
-  onConfirm: (nome: string, telefone: string) => void;
+  onConfirm: (nome: string, telefone: string, corretorSelecionado?: Corretor) => void;
   context: LeadContext;
   actionLabel?: string;
   actionIcon?: React.ReactNode;
+  corretores?: Corretor[];
 }
 
 export default function LeadModal({
@@ -27,12 +35,26 @@ export default function LeadModal({
   context,
   actionLabel = 'Continuar',
   actionIcon,
+  corretores = [],
 }: LeadModalProps) {
   const [nome, setNome] = useState('');
   const [telefone, setTelefone] = useState('');
   const [saving, setSaving] = useState(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState('');
+
+  // Filtrar corretores ativos que possuem WhatsApp
+  const corretoresComWhats = corretores.filter((c) => c.whatsapp && c.whatsapp.trim() !== '');
+
+  // Estado para corretor selecionado (começa pré-selecionado com o primeiro)
+  const [corretorSelecionado, setCorretorSelecionado] = useState<Corretor | null>(null);
+
+  // Inicializar o corretor selecionado
+  useEffect(() => {
+    if (corretoresComWhats.length > 0) {
+      setCorretorSelecionado(corretoresComWhats[0]);
+    }
+  }, [corretores]);
 
   if (!open) return null;
 
@@ -53,6 +75,10 @@ export default function LeadModal({
     setError('');
     setSaving(true);
 
+    const mensagemLead = corretorSelecionado
+      ? `Direcionado para a corretora: ${corretorSelecionado.nome}`
+      : 'Atendimento via WhatsApp central';
+
     try {
       await supabase.from('leads').insert({
         nome: nome.trim(),
@@ -62,6 +88,7 @@ export default function LeadModal({
         imovel_codigo: context.imovelCodigo || null,
         imovel_titulo: context.imovelTitulo || null,
         origem: typeof window !== 'undefined' ? window.location.pathname : null,
+        mensagem: mensagemLead,
       });
     } catch {
       // Salvar falhou — continua mesmo assim para não bloquear o usuário
@@ -71,7 +98,7 @@ export default function LeadModal({
     setDone(true);
 
     setTimeout(() => {
-      onConfirm(nome.trim(), telefone.trim());
+      onConfirm(nome.trim(), telefone.trim(), corretorSelecionado || undefined);
       // Reset
       setNome('');
       setTelefone('');
@@ -167,10 +194,49 @@ export default function LeadModal({
               </div>
             </div>
 
+            {/* Escolha do Atendimento (Seletor premium se houver mais de uma corretora com whats) */}
+            {corretoresComWhats.length > 1 && (
+              <div className="flex flex-col space-y-2 pt-1">
+                <label className="text-[10px] tracking-widest uppercase font-semibold text-stone-400">
+                  Falar Com *
+                </label>
+                <div className="grid grid-cols-2 gap-3">
+                  {corretoresComWhats.map((c, idx) => (
+                    <button
+                      key={c.id || idx}
+                      type="button"
+                      onClick={() => setCorretorSelecionado(c)}
+                      className={`flex items-center space-x-2.5 p-3 rounded-2xl border text-left transition duration-300 focus:outline-none cursor-pointer ${
+                        corretorSelecionado?.whatsapp === c.whatsapp
+                          ? 'border-primary bg-primary/5 ring-1 ring-primary shadow-sm shadow-primary/5'
+                          : 'border-stone-200 hover:border-stone-300 hover:bg-stone-50'
+                      }`}
+                    >
+                      <div className="w-8 h-8 rounded-full overflow-hidden bg-stone-200 flex-shrink-0 flex items-center justify-center text-stone-500 border border-stone-100">
+                        {c.foto_url ? (
+                          <img src={c.foto_url} alt={c.nome} className="w-full h-full object-cover" />
+                        ) : (
+                          <User size={12} />
+                        )}
+                      </div>
+                      <div className="leading-tight">
+                        <span className="block text-xs font-semibold text-stone-800">
+                          {c.nome.split(' ')[0]}
+                        </span>
+                        <span className="text-[9px] text-stone-400 font-sans tracking-wide">
+                          Corretora
+                        </span>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <button
               type="submit"
               disabled={saving}
-              className="w-full flex items-center justify-center space-x-2 bg-primary hover:opacity-90 disabled:opacity-60 text-white font-semibold text-sm py-3.5 rounded-xl transition cursor-pointer shadow-md"
+              className="w-full flex items-center justify-center space-x-2 bg-primary hover:opacity-90 disabled:opacity-60 text-white font-semibold text-sm py-3.5 rounded-xl transition cursor-pointer shadow-md mt-6"
             >
               {saving ? (
                 <Loader2 size={16} className="animate-spin" />
@@ -182,7 +248,7 @@ export default function LeadModal({
               )}
             </button>
 
-            <p className="text-center text-[10px] text-stone-400">
+            <p className="text-center text-[10px] text-stone-400 pt-2">
               Seus dados são usados apenas para atendimento. Não compartilhamos com terceiros.
             </p>
           </form>

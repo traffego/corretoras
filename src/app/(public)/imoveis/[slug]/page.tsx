@@ -58,6 +58,15 @@ export default async function ImovelDetailPage({ params }: ImovelDetailPageProps
     notFound();
   }
 
+  // Buscar corretores ativos para o WhatsApp
+  const { data: corretoresData } = await supabase
+    .from('corretores')
+    .select('nome, whatsapp, foto_url')
+    .eq('ativo', true)
+    .order('ordem', { ascending: true });
+
+  const corretores = corretoresData || [];
+
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
@@ -180,6 +189,8 @@ export default async function ImovelDetailPage({ params }: ImovelDetailPageProps
             </div>
             <WhatsAppLeadButton
               whatsLink={whatsLink}
+              settings={settings}
+              corretores={corretores}
               fullWidth
               context={{
                 tipo: 'imovel',

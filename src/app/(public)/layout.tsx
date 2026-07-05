@@ -1,6 +1,6 @@
 export const dynamic = 'force-dynamic';
 
-import { getSettings } from "@/lib/supabase";
+import { getSettings, supabase } from "@/lib/supabase";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
@@ -12,12 +12,21 @@ export default async function PublicLayout({
 }>) {
   const settings = await getSettings();
 
+  // Buscar corretores ativos para exibição no WhatsApp
+  const { data: corretoresData } = await supabase
+    .from('corretores')
+    .select('nome, whatsapp, foto_url')
+    .eq('ativo', true)
+    .order('ordem', { ascending: true });
+
+  const corretores = corretoresData || [];
+
   return (
     <>
       <Header settings={settings} />
       <main className="flex-grow">{children}</main>
       <Footer settings={settings} />
-      <WhatsAppButton settings={settings} />
+      <WhatsAppButton settings={settings} corretores={corretores} />
     </>
   );
 }
