@@ -43,9 +43,14 @@ export async function applyWatermark(file: File, settings: WatermarkSettings): P
   try {
     // 1. Carregar imagem original e marca d'água
     const originalDataUrl = await fileToDataURL(file);
+    // Adicionar parâmetro para evitar cache do navegador e possíveis erros de CORS no Canvas
+    const watermarkUrl = settings.marca_agua_url.includes('?')
+      ? `${settings.marca_agua_url}&t=${Date.now()}`
+      : `${settings.marca_agua_url}?t=${Date.now()}`;
+
     const [originalImg, watermarkImg] = await Promise.all([
       loadImage(originalDataUrl),
-      loadImage(settings.marca_agua_url)
+      loadImage(watermarkUrl)
     ]);
 
     // 2. Criar canvas com tamanho idêntico ao original

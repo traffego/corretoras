@@ -107,13 +107,13 @@ export default function PropertyForm({
       try {
         const { data, error } = await supabase
           .from('settings')
-          .select('marca_agua_url, marca_agua_posicao, marca_agua_opacidade, marca_agua_tamanho, marca_agua_ativa')
+          .select('marca_agua_url, logo_url, marca_agua_posicao, marca_agua_opacidade, marca_agua_tamanho, marca_agua_ativa')
           .eq('id', 1)
           .single();
 
         if (!error && data) {
           setWatermarkSettings({
-            marca_agua_url: data.marca_agua_url,
+            marca_agua_url: data.marca_agua_url || data.logo_url || null,
             marca_agua_posicao: (data.marca_agua_posicao as any) || 'canto-inferior-direito',
             marca_agua_opacidade: data.marca_agua_opacidade !== null ? Number(data.marca_agua_opacidade) : 0.3,
             marca_agua_tamanho: data.marca_agua_tamanho !== null ? Number(data.marca_agua_tamanho) : 0.2,
