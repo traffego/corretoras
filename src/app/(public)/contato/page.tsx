@@ -1,7 +1,7 @@
 export const dynamic = 'force-dynamic';
 
 import { Phone, Mail, Award, Clock, MapPin } from 'lucide-react';
-import { getSettings } from '@/lib/supabase';
+import { getSettings, supabase } from '@/lib/supabase';
 import ContactForm from '@/components/ContactForm';
 
 export const metadata = {
@@ -12,15 +12,39 @@ export const metadata = {
 export default async function ContatoPage() {
   const settings = await getSettings();
 
+  const { data: corretoresData } = await supabase
+    .from('corretores')
+    .select('nome, whatsapp, foto_url, creci')
+    .eq('ativo', true)
+    .order('ordem', { ascending: true });
+
+  const corretores = corretoresData || [];
+
   const formatWhatsAppNumber = (num: string) => {
     const cleanNum = num.replace(/\D/g, '');
+    let display = num;
+    if (cleanNum.length === 13 && cleanNum.startsWith('55')) {
+      const parts = cleanNum.slice(2);
+      display = `(${parts.slice(0, 2)}) ${parts.slice(2, 7)}-${parts.slice(7)}`;
+    }
     return {
       link: `https://wa.me/${cleanNum}`,
-      display: num,
+      display,
     };
   };
 
+  const getCreciString = () => {
+    if (corretores && corretores.length > 0) {
+      const activeCrecis = corretores.map(c => c.creci).filter(Boolean);
+      if (activeCrecis.length > 0) {
+        return activeCrecis.join(' / ');
+      }
+    }
+    return settings.creci;
+  };
+
   const whatsappInfo = formatWhatsAppNumber(settings.whatsapp);
+  const corretoresComWhats = corretores.filter((c) => c.whatsapp && c.whatsapp.trim() !== '');
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-12">
@@ -53,18 +77,37 @@ export default async function ContatoPage() {
               <div className="p-3 bg-primary/10 rounded-xl text-primary flex-shrink-0">
                 <Phone size={20} />
               </div>
-              <div className="space-y-1">
+              <div className="space-y-1 w-full">
                 <span className="text-[10px] tracking-wider uppercase font-semibold text-stone-400 block">
                   WhatsApp
                 </span>
-                <a
-                  href={whatsappInfo.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-base font-bold text-secondary hover:text-primary transition"
-                >
-                  {whatsappInfo.display}
-                </a>
+                {corretoresComWhats.length > 0 ? (
+                  <div className="flex flex-col space-y-2">
+                    {corretoresComWhats.map((c, idx) => {
+                      const info = formatWhatsAppNumber(c.whatsapp!);
+                      return (
+                        <a
+                          key={idx}
+                          href={info.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-base font-bold text-secondary hover:text-primary transition block"
+                        >
+                          {info.display} - {c.nome.split(' ')[0]}
+                        </a>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <a
+                    href={whatsappInfo.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-base font-bold text-secondary hover:text-primary transition"
+                  >
+                    {whatsappInfo.display}
+                  </a>
+                )}
               </div>
             </div>
 
@@ -126,7 +169,7 @@ export default async function ContatoPage() {
                   Registro Profissional
                 </span>
                 <span className="text-sm font-bold text-secondary">
-                  {settings.creci}
+                  {getCreciString()}
                 </span>
               </div>
             </div>

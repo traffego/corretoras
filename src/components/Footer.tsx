@@ -4,13 +4,13 @@ import { SystemSettings } from '@/lib/supabase';
 
 interface FooterProps {
   settings: SystemSettings;
+  corretores?: any[];
 }
 
-export default function Footer({ settings }: FooterProps) {
+export default function Footer({ settings, corretores = [] }: FooterProps) {
   const currentYear = new Date().getFullYear();
 
   const formatWhatsAppNumber = (num: string) => {
-    // Adiciona máscara simples se for no padrão BR (ex: 66 99999-9999)
     const cleanNum = num.replace(/\D/g, '');
     let display = num;
     if (cleanNum.length === 13 && cleanNum.startsWith('55')) {
@@ -23,7 +23,18 @@ export default function Footer({ settings }: FooterProps) {
     };
   };
 
+  const getCreciString = () => {
+    if (corretores && corretores.length > 0) {
+      const activeCrecis = corretores.map(c => c.creci).filter(Boolean);
+      if (activeCrecis.length > 0) {
+        return activeCrecis.join(' / ');
+      }
+    }
+    return settings.creci;
+  };
+
   const whatsInfo = formatWhatsAppNumber(settings.whatsapp);
+  const corretoresComWhats = corretores.filter((c) => c.whatsapp && c.whatsapp.trim() !== '');
 
   return (
     <footer className="bg-stone-900 text-stone-300 border-t border-stone-800">
@@ -44,7 +55,7 @@ export default function Footer({ settings }: FooterProps) {
           </p>
           <div className="inline-flex items-center space-x-2 text-xs text-stone-500 bg-stone-800/50 px-3 py-1.5 rounded">
             <ShieldAlert size={12} className="text-primary" />
-            <span>{settings.creci}</span>
+            <span>{getCreciString()}</span>
           </div>
         </div>
 
@@ -112,17 +123,36 @@ export default function Footer({ settings }: FooterProps) {
             Contatos
           </h3>
           <ul className="space-y-3 text-sm">
-            <li className="flex items-start space-x-3">
-              <Phone size={16} className="text-primary mt-0.5 flex-shrink-0" />
-              <a
-                href={whatsInfo.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-primary transition duration-300"
-              >
-                {whatsInfo.display}
-              </a>
-            </li>
+            {corretoresComWhats.length > 0 ? (
+              corretoresComWhats.map((c, idx) => {
+                const info = formatWhatsAppNumber(c.whatsapp!);
+                return (
+                  <li key={idx} className="flex items-start space-x-3">
+                    <Phone size={16} className="text-primary mt-0.5 flex-shrink-0" />
+                    <a
+                      href={info.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-primary transition duration-300"
+                    >
+                      {info.display} ({c.nome.split(' ')[0]})
+                    </a>
+                  </li>
+                );
+              })
+            ) : (
+              <li className="flex items-start space-x-3">
+                <Phone size={16} className="text-primary mt-0.5 flex-shrink-0" />
+                <a
+                  href={whatsInfo.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-primary transition duration-300"
+                >
+                  {whatsInfo.display}
+                </a>
+              </li>
+            )}
             <li className="flex items-start space-x-3">
               <Mail size={16} className="text-primary mt-0.5 flex-shrink-0" />
               <a

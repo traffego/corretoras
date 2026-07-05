@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Award, Briefcase, Heart, Shield, Phone } from 'lucide-react';
 import { getSettings, supabase } from '@/lib/supabase';
 import CorretoresCarousel, { Corretor } from '@/components/CorretoresCarousel';
+import WhatsAppLeadButton from '@/components/WhatsAppLeadButton';
 
 export const metadata = {
   title: 'Sobre Nós',
@@ -133,15 +134,16 @@ export default async function SobreMimPage() {
           </div>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 relative z-10">
-            <a
-              href={formatWhatsAppLink(settings.whatsapp)}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full sm:w-auto bg-primary text-white hover:opacity-90 active:scale-95 px-8 py-4 rounded-full font-medium text-sm tracking-wider uppercase shadow-md transition duration-300 flex items-center justify-center space-x-2"
-            >
-              <Phone size={16} />
-              <span>Entrar em contato</span>
-            </a>
+            <WhatsAppLeadButton
+              whatsLink={formatWhatsAppLink(settings.whatsapp)}
+              settings={settings}
+              corretores={corretores}
+              label="Entrar em contato"
+              className="w-full sm:w-auto px-8 py-4 rounded-full"
+              context={{
+                tipo: 'geral',
+              }}
+            />
             <Link
               href="/contato"
               className="w-full sm:w-auto text-center border border-stone-700 hover:border-stone-500 px-8 py-4 rounded-full font-medium text-sm tracking-wider uppercase transition duration-300"

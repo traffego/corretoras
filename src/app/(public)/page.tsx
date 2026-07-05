@@ -74,10 +74,25 @@ export default async function Home() {
 
   const formatWhatsAppNumber = (num: string) => {
     const cleanNum = num.replace(/\D/g, '');
+    let display = num;
+    if (cleanNum.length === 13 && cleanNum.startsWith('55')) {
+      const parts = cleanNum.slice(2);
+      display = `(${parts.slice(0, 2)}) ${parts.slice(2, 7)}-${parts.slice(7)}`;
+    }
     return {
       link: `https://wa.me/${cleanNum}`,
-      display: num,
+      display,
     };
+  };
+
+  const getCreciString = () => {
+    if (corretores && corretores.length > 0) {
+      const activeCrecis = corretores.map(c => c.creci).filter(Boolean);
+      if (activeCrecis.length > 0) {
+        return activeCrecis.join(' / ');
+      }
+    }
+    return settings.creci;
   };
 
   const whatsappInfo = formatWhatsAppNumber(settings.whatsapp);
@@ -164,6 +179,8 @@ export default async function Home() {
                   </span>
                   <WhatsAppLeadButton
                     whatsLink={whatsappInfo.link}
+                    settings={settings}
+                    corretores={corretores}
                     label={whatsappInfo.display}
                     context={{ tipo: 'geral' }}
                     className="!py-1.5 !px-0 !bg-transparent !shadow-none !text-secondary hover:!text-primary !text-base !font-bold !tracking-normal !uppercase-none"
@@ -199,7 +216,7 @@ export default async function Home() {
                     Registro de Classe
                   </span>
                   <span className="text-base font-bold text-secondary">
-                    {settings.creci}
+                    {getCreciString()}
                   </span>
                 </div>
               </div>
