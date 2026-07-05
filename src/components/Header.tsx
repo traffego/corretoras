@@ -5,14 +5,17 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Menu, X, Phone } from 'lucide-react';
 import { SystemSettings } from '@/lib/supabase';
+import WhatsAppSelectModal from '@/components/WhatsAppSelectModal';
 
 interface HeaderProps {
   settings: SystemSettings;
+  corretores?: any[];
 }
 
-export default function Header({ settings }: HeaderProps) {
+export default function Header({ settings, corretores = [] }: HeaderProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [whatsModalOpen, setWhatsModalOpen] = useState(false);
   const pathname = usePathname();
 
   useEffect(() => {
@@ -34,9 +37,22 @@ export default function Header({ settings }: HeaderProps) {
     { name: 'Contato', href: '/contato' },
   ];
 
-  const formatWhatsAppLink = (num: string) => {
-    const cleanNum = num.replace(/\D/g, '');
-    return `https://wa.me/${cleanNum}?text=Olá,%20gostaria%20de%20obter%20mais%20informações.`;
+  const corretoresComWhats = corretores.filter((c) => c.whatsapp && c.whatsapp.trim() !== '');
+
+  const handleWhatsAppClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (corretoresComWhats.length > 1) {
+      e.preventDefault();
+      setWhatsModalOpen(true);
+    }
+  };
+
+  const getWhatsLink = () => {
+    if (corretoresComWhats.length === 1) {
+      const cleanNum = corretoresComWhats[0].whatsapp!.replace(/\D/g, '');
+      return `https://wa.me/${cleanNum}?text=Olá,%20vi%20o%20seu%20site%20imobiliário%20e%20gostaria%20de%20conversar.`;
+    }
+    const cleanNum = settings.whatsapp.replace(/\D/g, '');
+    return `https://wa.me/${cleanNum}?text=Olá,%20vi%20o%20seu%20site%20imobiliário%20e%20gostaria%20de%20conversar.`;
   };
 
   return (
@@ -94,7 +110,8 @@ export default function Header({ settings }: HeaderProps) {
         {/* Right CTA Button */}
         <div className="hidden md:block">
           <a
-            href={formatWhatsAppLink(settings.whatsapp)}
+            href={getWhatsLink()}
+            onClick={handleWhatsAppClick}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center space-x-2 bg-primary text-white hover:opacity-90 active:scale-95 font-medium text-xs tracking-wider uppercase px-6 py-3 rounded-full transition duration-300 shadow-md"
@@ -136,10 +153,13 @@ export default function Header({ settings }: HeaderProps) {
               );
             })}
             <a
-              href={formatWhatsAppLink(settings.whatsapp)}
+              href={getWhatsLink()}
+              onClick={(e) => {
+                setIsOpen(false);
+                handleWhatsAppClick(e);
+              }}
               target="_blank"
               rel="noopener noreferrer"
-              onClick={() => setIsOpen(false)}
               className="flex items-center justify-center space-x-2 bg-primary text-white font-medium text-sm tracking-wider uppercase py-3 rounded-full shadow-md w-full"
             >
               <Phone size={16} />
@@ -148,6 +168,13 @@ export default function Header({ settings }: HeaderProps) {
           </div>
         </div>
       )}
+
+      <WhatsAppSelectModal
+        open={whatsModalOpen}
+        onClose={() => setWhatsModalOpen(false)}
+        corretores={corretores}
+        settings={settings}
+      />
     </header>
   );
 }
