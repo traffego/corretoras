@@ -49,7 +49,8 @@ export default function Header({ settings, corretores = [] }: HeaderProps) {
   const getWhatsLink = () => {
     if (corretoresComWhats.length === 1) {
       const cleanNum = corretoresComWhats[0].whatsapp!.replace(/\D/g, '');
-      return `https://wa.me/${cleanNum}?text=Olá,%20vi%20o%20seu%20site%20imobiliário%20e%20gostaria%20de%20conversar.`;
+      const saudacao = `Olá%20${corretoresComWhats[0].nome.split(' ')[0]}`;
+      return `https://wa.me/${cleanNum}?text=${saudacao},%20vi%20o%20seu%20site%20imobiliário%20e%20gostaria%20de%20conversar.`;
     }
     const cleanNum = settings.whatsapp.replace(/\D/g, '');
     return `https://wa.me/${cleanNum}?text=Olá,%20vi%20o%20seu%20site%20imobiliário%20e%20gostaria%20de%20conversar.`;

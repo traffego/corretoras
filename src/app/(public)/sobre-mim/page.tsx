@@ -60,9 +60,10 @@ export default async function SobreMimPage() {
     },
   ];
 
-  const formatWhatsAppLink = (num: string) => {
+  const formatWhatsAppLink = (num: string, nome?: string) => {
     const cleanNum = num.replace(/\D/g, '');
-    return `https://wa.me/${cleanNum}?text=Olá,%20vi%20sua%20página%20de%20biografia%20e%20gostaria%20de%20conversar.`;
+    const saudacao = nome ? `Olá%20${nome.split(' ')[0]}` : 'Olá';
+    return `https://wa.me/${cleanNum}?text=${saudacao},%20vi%20sua%20página%20de%20biografia%20e%20gostaria%20de%20conversar.`;
   };
 
   return (
