@@ -7,7 +7,7 @@ import { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
-import { LayoutDashboard, Home, Mail, Settings, LogOut, Loader2, Menu, X, Users } from 'lucide-react';
+import { LayoutDashboard, Home, Mail, Settings, LogOut, Loader2, Menu, X, Users, ShieldAlert } from 'lucide-react';
 
 export default function AdminDashboardLayout({
   children,
@@ -54,6 +54,7 @@ export default function AdminDashboardLayout({
     { name: 'Imóveis', href: '/admin/imoveis', icon: <Home size={18} /> },
     { name: 'Corretores', href: '/admin/corretores', icon: <Users size={18} /> },
     { name: 'Leads de Contato', href: '/admin/leads', icon: <Mail size={18} /> },
+    { name: 'Administradores', href: '/admin/administradores', icon: <ShieldAlert size={18} /> },
     { name: 'Configurações', href: '/admin/configuracoes', icon: <Settings size={18} /> },
   ];
 
