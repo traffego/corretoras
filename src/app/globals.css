@@ -3,7 +3,7 @@
 @theme {
   --color-primary: var(--color-primary);
   --color-secondary: var(--color-secondary);
-  --font-serif: "GrillMaster", "Grillmaster", var(--font-inter), sans-serif;
+  --font-serif: "GrillMaster", "Grillmaster", "Grill Master", "Grillmaster Regular", "Grillmaster-Regular", var(--font-inter), sans-serif;
   --font-sans: var(--font-inter), system-ui, -apple-system, sans-serif;
 }
 
