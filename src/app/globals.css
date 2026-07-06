@@ -19,6 +19,17 @@ body {
   overflow-x: hidden;
 }
 
+/* Customização para deixar a fonte GrillMaster menos bold */
+.font-serif.font-bold,
+.font-bold.font-serif {
+  font-weight: 600 !important;
+}
+
+.font-serif.font-semibold,
+.font-semibold.font-serif {
+  font-weight: 500 !important;
+}
+
 /* Transição de cores global suave */
 * {
   border-color: rgba(28, 25, 23, 0.1);
