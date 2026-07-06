@@ -188,7 +188,7 @@ export default async function ContatoPage() {
           </div>
           <div className="w-full overflow-hidden rounded-3xl border border-stone-200/50 shadow-sm flex-grow">
             <iframe
-              src="https://maps.google.com/maps?q=Rua%20Gumercindo%20Antonietti%20Marques%2C%20430W%2C%20Jardim%20Ac%C3%A1cia%2C%20Tangar%C3%A1%20da%20Serra%20-%20MT&t=&z=16&ie=UTF8&iwloc=&output=embed"
+              src={`https://maps.google.com/maps?q=Rua%20Gumercindo%20Antonietti%20Marques%2C%20430W%2C%20Jardim%20Ac%C3%A1cia%2C%20Tangar%C3%A1%20da%20Serra%20-%20MT%20(${encodeURIComponent(settings.nome_corretora)})&t=&z=17&ie=UTF8&iwloc=A&output=embed`}
               width="100%"
               height="100%"
               style={{ border: 0, minHeight: '450px' }}
