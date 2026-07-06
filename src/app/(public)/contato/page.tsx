@@ -182,6 +182,30 @@ export default async function ContatoPage() {
           <ContactForm />
         </div>
       </div>
+
+      {/* Seção do Mapa */}
+      <div className="mt-16 border-t border-stone-200/60 pt-16 space-y-6">
+        <div className="text-center sm:text-left space-y-2">
+          <h2 className="font-serif text-2xl font-bold text-secondary">
+            Nossa Localização
+          </h2>
+          <p className="text-sm text-stone-500">
+            Venha nos visitar no nosso escritório central.
+          </p>
+        </div>
+        <div className="w-full overflow-hidden rounded-3xl border border-stone-200/50 shadow-sm">
+          <iframe
+            src="https://maps.google.com/maps?q=Rua%20Gumercindo%20Antonietti%20Marques%2C%20430W%2C%20Jardim%20Ac%C3%A1cia%2C%20Tangar%C3%A1%20da%20Serra%20-%20MT&t=&z=16&ie=UTF8&iwloc=&output=embed"
+            width="100%"
+            height="450"
+            style={{ border: 0 }}
+            allowFullScreen
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+            className="w-full h-[300px] sm:h-[450px]"
+          ></iframe>
+        </div>
+      </div>
     </div>
   );
 }
