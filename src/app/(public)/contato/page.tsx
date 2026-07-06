@@ -188,13 +188,13 @@ export default async function ContatoPage() {
           </div>
           <div className="w-full overflow-hidden rounded-3xl border border-stone-200/50 shadow-sm flex-grow">
             <iframe
-              src={`https://maps.google.com/maps?q=Rua%20Gumercindo%20Antonietti%20Marques%2C%20430W%2C%20Jardim%20Ac%C3%A1cia%2C%20Tangar%C3%A1%20da%20Serra%20-%20MT%20(${encodeURIComponent(settings.nome_corretora)})&t=&z=17&ie=UTF8&iwloc=A&output=embed`}
+              src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d241.28746678698897!2d-57.49706190152838!3d-14.621878186501188!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1spt-BR!2sbr!4v1783306950781!5m2!1spt-BR!2sbr"
               width="100%"
               height="100%"
               style={{ border: 0, minHeight: '450px' }}
               allowFullScreen
               loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
+              referrerPolicy="strict-origin-when-cross-origin"
               className="w-full h-full"
             ></iframe>
           </div>
