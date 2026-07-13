@@ -21,35 +21,35 @@ export default function FeatureIcons({
 }: FeatureIconsProps) {
   const features = [];
 
-  // 1. Área - Só adiciona se for maior que 0
-  let areaLabel = '';
-  let areaTipo = 'Área';
+  // 1. Área Construída - Só adiciona se > 0
   if (area_construida && area_construida > 0) {
-    areaLabel = `${area_construida}m²`;
-    areaTipo = 'Construída';
-  } else if (area_total && area_total > 0) {
-    areaLabel = `${area_total}m²`;
-    areaTipo = 'Total';
-  }
-
-  if (areaLabel) {
     features.push({
       icon: <Maximize2 size={compact ? 14 : 18} />,
-      label: areaLabel,
-      subLabel: areaTipo,
+      label: `${area_construida}m² const.`,
+      subLabel: 'Construída',
     });
   }
 
-  // 2. Quartos / Suítes - Só adiciona se quartos > 0
+  // 2. Área Total - Só adiciona se > 0
+  if (area_total && area_total > 0) {
+    features.push({
+      icon: <Maximize2 size={compact ? 14 : 18} />,
+      label: `${area_total}m² total`,
+      subLabel: 'Total',
+    });
+  }
+
+  // 3. Quartos / Suítes - Só adiciona se quartos > 0
   if (quartos > 0) {
+    const suitesText = suites > 0 ? ` (${suites} suíte${suites !== 1 ? 's' : ''})` : '';
     features.push({
       icon: <Bed size={compact ? 14 : 18} />,
-      label: `${quartos} Quarto${quartos !== 1 ? 's' : ''}`,
+      label: `${quartos} Quarto${quartos !== 1 ? 's' : ''}${suitesText}`,
       subLabel: suites > 0 ? `${suites} Suíte${suites !== 1 ? 's' : ''}` : 'Quartos',
     });
   }
 
-  // 3. Banheiros - Só adiciona se banheiros > 0
+  // 4. Banheiros - Só adiciona se banheiros > 0
   if (banheiros > 0) {
     features.push({
       icon: <Bath size={compact ? 14 : 18} />,
@@ -58,7 +58,7 @@ export default function FeatureIcons({
     });
   }
 
-  // 4. Vagas - Só adiciona se vagas > 0
+  // 5. Vagas - Só adiciona se vagas > 0
   if (vagas > 0) {
     features.push({
       icon: <Car size={compact ? 14 : 18} />,
