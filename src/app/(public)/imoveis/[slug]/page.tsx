@@ -168,7 +168,13 @@ export default async function ImovelDetailPage({ params }: ImovelDetailPageProps
 
           {/* Outros Diferenciais do Imóvel */}
           {property.atributos && Array.isArray(property.atributos) && property.atributos.length > 0 && (
-            <AtributosImovel atributos={property.atributos} />
+            <AtributosImovel
+              atributos={property.atributos.filter((attr: any) => {
+                if (!attr || !attr.nome) return false;
+                const nome = attr.nome.toLowerCase();
+                return !['quarto', 'quartos', 'suite', 'suites', 'suíte', 'suítes', 'banheiro', 'banheiros', 'vaga', 'vagas', 'garagem', 'area', 'área'].some(p => nome.includes(p));
+              })}
+            />
           )}
 
           {/* Descrição */}
