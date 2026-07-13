@@ -57,7 +57,7 @@ export default function PropertyCard({ property }: PropertyCardProps) {
       apartamento: 'Apartamento',
       terreno: 'Terreno',
     };
-    return labels[tipo] || tipo;
+    return labels[tipo] || (tipo ? tipo.charAt(0).toUpperCase() + tipo.slice(1) : '');
   };
 
   return (

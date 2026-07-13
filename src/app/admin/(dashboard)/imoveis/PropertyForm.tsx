@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { applyWatermark, type WatermarkSettings } from '@/lib/watermark';
-import { ArrowLeft, Save, Trash2, ArrowUp, ArrowDown, Plus, Loader2, Image as ImageIcon, X, ChevronDown, ZoomIn, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowLeft, Save, Trash2, ArrowUp, ArrowDown, Plus, Loader2, Image as ImageIcon, X, ChevronDown, ZoomIn, ChevronLeft, ChevronRight, AlertCircle } from 'lucide-react';
 import Image from 'next/image';
 import { ICONES_ATRIBUTO, getIconeComponente, type Atributo } from '@/components/AtributosImovel';
 
@@ -79,6 +79,18 @@ export default function PropertyForm({
   const [novoAtributo, setNovoAtributo] = useState<Atributo>({ nome: '', icone: 'star', descricao: '' });
   const [iconPickerAberto, setIconPickerAberto] = useState(false);
 
+  // Estados para tipos de imóveis dinâmicos
+  const [tiposDisponiveis, setTiposDisponiveis] = useState<{name: string, slug: string}[]>([
+    { name: 'Casa', slug: 'casa' },
+    { name: 'Sobrado', slug: 'sobrado' },
+    { name: 'Apartamento', slug: 'apartamento' },
+    { name: 'Terreno', slug: 'terreno' }
+  ]);
+  const [showAddTipoModal, setShowAddTipoModal] = useState(false);
+  const [novoTipoNome, setNovoTipoNome] = useState('');
+  const [salvandoTipo, setSalvandoTipo] = useState(false);
+  const [erroTipo, setErroTipo] = useState('');
+
   // Galeria recolhida no modo edição
   const [galeriaAberta, setGaleriaAberta] = useState(!isEditMode);
   const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
@@ -145,6 +157,72 @@ export default function PropertyForm({
       obterNovoCodigo();
     }
   }, [isEditMode, initialProperty]);
+
+  // Carregar os tipos de imóveis do banco de dados na inicialização
+  useEffect(() => {
+    const fetchTipos = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('property_types')
+          .select('name, slug')
+          .order('name');
+        if (!error && data && data.length > 0) {
+          setTiposDisponiveis(data);
+        }
+      } catch (err) {
+        console.error('Erro ao carregar tipos de imóveis:', err);
+      }
+    };
+    fetchTipos();
+  }, []);
+
+  const handleAddTipo = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!novoTipoNome.trim()) return;
+
+    setSalvandoTipo(true);
+    setErroTipo('');
+
+    const generatedSlug = novoTipoNome
+      .trim()
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '') // remove acentos
+      .replace(/[^a-z0-9\s-]/g, '') // remove caract. especiais
+      .trim()
+      .replace(/\s+/g, '-'); // substitui espaços por -
+
+    try {
+      const { data, error } = await supabase
+        .from('property_types')
+        .insert({ name: novoTipoNome.trim(), slug: generatedSlug })
+        .select()
+        .single();
+
+      if (error) {
+        if (error.code === '23505') {
+          throw new Error('Este tipo de imóvel já está cadastrado.');
+        }
+        throw error;
+      }
+
+      // Atualizar lista local
+      const novoItem = { name: data.name, slug: data.slug };
+      setTiposDisponiveis(prev => [...prev, novoItem].sort((a, b) => a.name.localeCompare(b.name)));
+      
+      // Selecionar o novo tipo criado
+      setTipo(data.slug);
+      
+      // Limpar e fechar modal
+      setNovoTipoNome('');
+      setShowAddTipoModal(false);
+    } catch (err: any) {
+      console.error('Erro ao cadastrar tipo:', err);
+      setErroTipo(err.message || 'Erro ao cadastrar tipo de imóvel.');
+    } finally {
+      setSalvandoTipo(false);
+    }
+  };
 
   // Carregar configurações de marca d'água
   useEffect(() => {
@@ -344,7 +422,8 @@ export default function PropertyForm({
   };
 
   return (
-    <form onSubmit={handleSave} className="space-y-8 pb-16">
+    <>
+      <form onSubmit={handleSave} className="space-y-8 pb-16">
       {/* Header Form */}
       <div className="flex items-center justify-between border-b border-stone-200/60 pb-6">
         <div className="flex items-center space-x-4">
@@ -451,16 +530,31 @@ export default function PropertyForm({
               <label className="text-[10px] tracking-widest uppercase font-semibold text-stone-400 mb-1.5">
                 Tipo do Imóvel *
               </label>
-              <select
-                value={tipo}
-                onChange={(e) => setTipo(e.target.value)}
-                className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm text-secondary focus:ring-1 focus:ring-primary focus:outline-none cursor-pointer"
-              >
-                <option value="casa">Casa</option>
-                <option value="sobrado">Sobrado</option>
-                <option value="apartamento">Apartamento</option>
-                <option value="terreno">Terreno</option>
-              </select>
+              <div className="flex space-x-2">
+                <select
+                  value={tipo}
+                  onChange={(e) => setTipo(e.target.value)}
+                  className="flex-1 bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm text-secondary focus:ring-1 focus:ring-primary focus:outline-none cursor-pointer"
+                >
+                  {tiposDisponiveis.map((t) => (
+                    <option key={t.slug} value={t.slug}>
+                      {t.name}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setErroTipo('');
+                    setNovoTipoNome('');
+                    setShowAddTipoModal(true);
+                  }}
+                  className="px-3.5 py-2.5 bg-stone-100 hover:bg-stone-200 border border-stone-200 rounded-xl text-[10px] font-bold text-stone-500 uppercase tracking-wider transition cursor-pointer whitespace-nowrap"
+                  title="Cadastrar novo tipo de imóvel"
+                >
+                  + Novo
+                </button>
+              </div>
             </div>
 
             {/* Finalidade */}
@@ -895,5 +989,76 @@ export default function PropertyForm({
         </div>
       </div>
     </form>
+
+      {/* Modal de Adicionar Novo Tipo de Imóvel */}
+      {showAddTipoModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[999999] p-4">
+          <div className="bg-white border border-stone-200 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-xl">
+            <div className="flex justify-between items-center border-b border-stone-100 pb-3">
+              <h3 className="font-serif text-lg font-bold text-secondary">
+                Novo Tipo de Imóvel
+              </h3>
+              <button
+                type="button"
+                onClick={() => setShowAddTipoModal(false)}
+                className="text-stone-400 hover:text-stone-600 transition cursor-pointer"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            {erroTipo && (
+              <div className="bg-rose-50 border border-rose-100 text-rose-800 rounded-xl p-3 flex items-start space-x-2 text-xs">
+                <AlertCircle size={16} className="text-rose-500 flex-shrink-0 mt-0.5" />
+                <span>{erroTipo}</span>
+              </div>
+            )}
+
+            <form onSubmit={handleAddTipo} className="space-y-4">
+              <div className="flex flex-col">
+                <label className="text-[10px] tracking-widest uppercase font-semibold text-stone-400 mb-1.5">
+                  Nome do Tipo
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Ex: Fazenda, Galpão, Chácara"
+                  value={novoTipoNome}
+                  onChange={(e) => setNovoTipoNome(e.target.value)}
+                  className="w-full px-4 py-2.5 text-sm bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-primary focus:bg-white transition text-secondary"
+                  disabled={salvandoTipo}
+                  autoFocus
+                />
+              </div>
+
+              <div className="flex justify-end space-x-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowAddTipoModal(false)}
+                  className="px-4 py-2 bg-stone-100 hover:bg-stone-200 border border-stone-200 rounded-xl text-xs font-semibold text-stone-600 transition cursor-pointer"
+                  disabled={salvandoTipo}
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  className="inline-flex items-center space-x-1.5 bg-primary hover:opacity-90 disabled:bg-stone-300 text-white text-xs font-semibold px-5 py-2.5 rounded-xl transition cursor-pointer"
+                  disabled={salvandoTipo || !novoTipoNome.trim()}
+                >
+                  {salvandoTipo ? (
+                    <>
+                      <Loader2 size={14} className="animate-spin" />
+                      <span>Salvando...</span>
+                    </>
+                  ) : (
+                    <span>Salvar Tipo</span>
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </>
   );
 }

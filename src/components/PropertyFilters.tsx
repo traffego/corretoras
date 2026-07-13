@@ -2,6 +2,8 @@
 
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { X } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { supabase } from '@/lib/supabase';
 
 interface PropertyFiltersProps {
   bairros: string[];
@@ -12,6 +14,30 @@ export default function PropertyFilters({ bairros, condominios }: PropertyFilter
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+
+  const [tiposDisponiveis, setTiposDisponiveis] = useState<{name: string, slug: string}[]>([
+    { name: 'Casa', slug: 'casa' },
+    { name: 'Sobrado', slug: 'sobrado' },
+    { name: 'Apartamento', slug: 'apartamento' },
+    { name: 'Terreno', slug: 'terreno' }
+  ]);
+
+  useEffect(() => {
+    const fetchTipos = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('property_types')
+          .select('name, slug')
+          .order('name');
+        if (!error && data && data.length > 0) {
+          setTiposDisponiveis(data);
+        }
+      } catch (err) {
+        console.error('Erro ao carregar tipos no filtro:', err);
+      }
+    };
+    fetchTipos();
+  }, []);
 
   // Função utilitária para atualizar os parâmetros na URL
   const updateQueryParam = (name: string, value: string) => {
@@ -100,10 +126,11 @@ export default function PropertyFilters({ bairros, condominios }: PropertyFilter
           className="w-full bg-stone-50 border border-stone-200 rounded-lg p-2.5 text-xs text-secondary focus:ring-1 focus:ring-primary focus:outline-none cursor-pointer"
         >
           <option value="">Todos os tipos</option>
-          <option value="casa">Casa</option>
-          <option value="sobrado">Sobrado</option>
-          <option value="apartamento">Apartamento</option>
-          <option value="terreno">Terreno</option>
+          {tiposDisponiveis.map((t) => (
+            <option key={t.slug} value={t.slug}>
+              {t.name}
+            </option>
+          ))}
         </select>
       </div>
 

@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Search, Hash } from 'lucide-react';
+import { supabase } from '@/lib/supabase';
 
 interface SearchBarProps {
   bairros: string[];
@@ -17,6 +18,30 @@ export default function SearchBar({ bairros, condominios }: SearchBarProps) {
   const [localizacao, setLocalizacao] = useState('');
   const [precoMax, setPrecoMax] = useState('');
   const [codigoBusca, setCodigoBusca] = useState('');
+
+  const [tiposDisponiveis, setTiposDisponiveis] = useState<{name: string, slug: string}[]>([
+    { name: 'Casa', slug: 'casa' },
+    { name: 'Sobrado', slug: 'sobrado' },
+    { name: 'Apartamento', slug: 'apartamento' },
+    { name: 'Terreno', slug: 'terreno' }
+  ]);
+
+  useEffect(() => {
+    const fetchTipos = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('property_types')
+          .select('name, slug')
+          .order('name');
+        if (!error && data && data.length > 0) {
+          setTiposDisponiveis(data);
+        }
+      } catch (err) {
+        console.error('Erro ao carregar tipos na busca principal:', err);
+      }
+    };
+    fetchTipos();
+  }, []);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -97,10 +122,11 @@ export default function SearchBar({ bairros, condominios }: SearchBarProps) {
             className="bg-transparent border-0 text-sm font-medium focus:ring-0 focus:outline-none cursor-pointer pr-8 text-stone-200"
           >
             <option value="" className="bg-stone-900 text-stone-200">Todos os tipos</option>
-            <option value="casa" className="bg-stone-900 text-stone-200">Casa</option>
-            <option value="sobrado" className="bg-stone-900 text-stone-200">Sobrado</option>
-            <option value="apartamento" className="bg-stone-900 text-stone-200">Apartamento</option>
-            <option value="terreno" className="bg-stone-900 text-stone-200">Terreno</option>
+            {tiposDisponiveis.map((t) => (
+              <option key={t.slug} value={t.slug} className="bg-stone-900 text-stone-200">
+                {t.name}
+              </option>
+            ))}
           </select>
         </div>
 

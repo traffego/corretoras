@@ -82,7 +82,7 @@ export default async function ImovelDetailPage({ params }: ImovelDetailPageProps
       apartamento: 'Apartamento',
       terreno: 'Terreno',
     };
-    return labels[tipo] || tipo;
+    return labels[tipo] || (tipo ? tipo.charAt(0).toUpperCase() + tipo.slice(1) : '');
   };
 
   // Montar link direto de WhatsApp com mensagem personalizada para este imóvel
