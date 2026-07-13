@@ -705,11 +705,11 @@ export default function PropertyForm({
               />
             </button>
 
-            {/* Conteúdo recolhível */}
-            {galeriaAberta && (
-              <div className="px-6 pb-6 space-y-4 border-t border-stone-100">
-                {/* Input de File */}
-                <div className="relative pt-4">
+            {/* Conteúdo recolhível e dinâmico */}
+            <div className="px-6 pb-6 space-y-4 border-t border-stone-100 pt-4">
+              {/* Input de File - visível se galeria aberta ou sem imagens */}
+              {(galeriaAberta || images.length === 0) && (
+                <div className="relative">
                   <input
                     type="file"
                     multiple
@@ -736,74 +736,92 @@ export default function PropertyForm({
                     )}
                   </label>
                 </div>
+              )}
 
-                {/* Grid de Fotos com botões na base da miniatura */}
-                {images.length > 0 && (
-                  <div className="grid grid-cols-1 gap-5 w-[90%] mx-auto">
-                    {images.map((img, idx) => (
-                      <div
-                        key={img.url}
-                        className="relative rounded-xl overflow-hidden border border-stone-200 bg-stone-100"
-                        style={{ height: '320px' }}
-                      >
-                        {/* Imagem */}
-                        <Image src={img.url} alt={`Foto ${idx + 1}`} fill className="object-cover" />
+              {/* Grid de Fotos */}
+              {images.length > 0 && (
+                <div className="grid grid-cols-1 gap-5 w-[90%] mx-auto">
+                  {(galeriaAberta ? images : [images[0]]).map((img, idx) => (
+                    <div
+                      key={img.url}
+                      className="relative rounded-xl overflow-hidden border border-stone-200 bg-stone-100"
+                      style={{ height: '320px' }}
+                    >
+                      {/* Imagem */}
+                      <Image src={img.url} alt={`Foto ${idx + 1}`} fill className="object-cover" />
 
-                        {/* Badge capa */}
-                        {idx === 0 && (
-                          <span className="absolute top-2 left-2 text-[9px] bg-primary text-white px-2 py-0.5 rounded font-bold uppercase tracking-wide z-10">
-                            Capa
-                          </span>
-                        )}
+                      {/* Badge capa */}
+                      {idx === 0 && (
+                        <span className="absolute top-2 left-2 text-[9px] bg-primary text-white px-2 py-0.5 rounded font-bold uppercase tracking-wide z-10">
+                          Capa
+                        </span>
+                      )}
 
-                        {/* Barra de ações fixa na base */}
-                        <div className="absolute bottom-0 left-0 right-0 flex items-center justify-between gap-1 px-2 py-1.5 bg-black/60 backdrop-blur-sm z-10">
-                          <span className="text-[10px] text-white/70 font-semibold uppercase tracking-wider">
-                            Foto {idx + 1}
-                          </span>
-                          <div className="flex items-center gap-1">
-                            <button
-                              type="button"
-                              onClick={() => setLightboxIdx(idx)}
-                              className="p-1.5 rounded-lg bg-white/15 hover:bg-white/30 text-white transition cursor-pointer"
-                              title="Ver foto ampliada"
-                            >
-                              <ZoomIn size={13} />
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => handleMoveImage(idx, 'up')}
-                              disabled={idx === 0}
-                              className="p-1.5 rounded-lg bg-white/15 hover:bg-white/30 text-white disabled:opacity-30 transition cursor-pointer"
-                              title="Mover para cima"
-                            >
-                              <ArrowUp size={13} />
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => handleMoveImage(idx, 'down')}
-                              disabled={idx === images.length - 1}
-                              className="p-1.5 rounded-lg bg-white/15 hover:bg-white/30 text-white disabled:opacity-30 transition cursor-pointer"
-                              title="Mover para baixo"
-                            >
-                              <ArrowDown size={13} />
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => handleRemoveImage(idx)}
-                              className="p-1.5 rounded-lg bg-rose-500/80 hover:bg-rose-600 text-white transition cursor-pointer"
-                              title="Remover foto"
-                            >
-                              <Trash2 size={13} />
-                            </button>
-                          </div>
+                      {/* Barra de ações fixa na base */}
+                      <div className="absolute bottom-0 left-0 right-0 flex items-center justify-between gap-1 px-2 py-1.5 bg-black/60 backdrop-blur-sm z-10">
+                        <span className="text-[10px] text-white/70 font-semibold uppercase tracking-wider">
+                          Foto {idx + 1}
+                        </span>
+                        <div className="flex items-center gap-1">
+                          <button
+                            type="button"
+                            onClick={() => setLightboxIdx(idx)}
+                            className="p-1.5 rounded-lg bg-white/15 hover:bg-white/30 text-white transition cursor-pointer"
+                            title="Ver foto ampliada"
+                          >
+                            <ZoomIn size={13} />
+                          </button>
+                          {galeriaAberta && (
+                            <>
+                              <button
+                                type="button"
+                                onClick={() => handleMoveImage(idx, 'up')}
+                                disabled={idx === 0}
+                                className="p-1.5 rounded-lg bg-white/15 hover:bg-white/30 text-white disabled:opacity-30 transition cursor-pointer"
+                                title="Mover para cima"
+                              >
+                                <ArrowUp size={13} />
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleMoveImage(idx, 'down')}
+                                disabled={idx === images.length - 1}
+                                className="p-1.5 rounded-lg bg-white/15 hover:bg-white/30 text-white disabled:opacity-30 transition cursor-pointer"
+                                title="Mover para baixo"
+                              >
+                                <ArrowDown size={13} />
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveImage(idx)}
+                                className="p-1.5 rounded-lg bg-rose-500/80 hover:bg-rose-600 text-white transition cursor-pointer"
+                                title="Remover foto"
+                              >
+                                <Trash2 size={13} />
+                              </button>
+                            </>
+                          )}
                         </div>
                       </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Botão para alternar visualização se houver mais de 1 foto */}
+              {images.length > 1 && (
+                <div className="pt-2 flex justify-center">
+                  <button
+                    type="button"
+                    onClick={() => setGaleriaAberta(o => !o)}
+                    className="inline-flex items-center space-x-2 bg-stone-100 hover:bg-stone-200 border border-stone-200 text-secondary text-xs font-semibold px-6 py-3 rounded-xl transition cursor-pointer"
+                  >
+                    <span>{galeriaAberta ? 'Mostrar Apenas Capa' : `Mostrar Todas as Fotos (${images.length})`}</span>
+                    <ChevronDown size={14} className={`transition-transform duration-300 ${galeriaAberta ? 'rotate-180' : ''}`} />
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Lightbox de Zoom */}
