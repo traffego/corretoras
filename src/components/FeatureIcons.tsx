@@ -21,7 +21,7 @@ export default function FeatureIcons({
 }: FeatureIconsProps) {
   const features = [];
 
-  // 1. Área
+  // 1. Área - Só adiciona se for maior que 0
   let areaLabel = '';
   let areaTipo = 'Área';
   if (area_construida && area_construida > 0) {
@@ -30,37 +30,44 @@ export default function FeatureIcons({
   } else if (area_total && area_total > 0) {
     areaLabel = `${area_total}m²`;
     areaTipo = 'Total';
-  } else {
-    areaLabel = '— m²';
-    areaTipo = 'Área';
   }
-  
-  features.push({
-    icon: <Maximize2 size={compact ? 14 : 18} />,
-    label: areaLabel,
-    subLabel: areaTipo,
-  });
 
-  // 2. Quartos / Suítes
-  features.push({
-    icon: <Bed size={compact ? 14 : 18} />,
-    label: `${quartos} Quarto${quartos !== 1 ? 's' : ''}`,
-    subLabel: suites > 0 ? `${suites} Suíte${suites !== 1 ? 's' : ''}` : 'Quartos',
-  });
+  if (areaLabel) {
+    features.push({
+      icon: <Maximize2 size={compact ? 14 : 18} />,
+      label: areaLabel,
+      subLabel: areaTipo,
+    });
+  }
 
-  // 3. Banheiros
-  features.push({
-    icon: <Bath size={compact ? 14 : 18} />,
-    label: `${banheiros} Banheiro${banheiros !== 1 ? 's' : ''}`,
-    subLabel: 'Banheiros',
-  });
+  // 2. Quartos / Suítes - Só adiciona se quartos > 0
+  if (quartos > 0) {
+    features.push({
+      icon: <Bed size={compact ? 14 : 18} />,
+      label: `${quartos} Quarto${quartos !== 1 ? 's' : ''}`,
+      subLabel: suites > 0 ? `${suites} Suíte${suites !== 1 ? 's' : ''}` : 'Quartos',
+    });
+  }
 
-  // 4. Vagas
-  features.push({
-    icon: <Car size={compact ? 14 : 18} />,
-    label: `${vagas} Vaga${vagas !== 1 ? 's' : ''}`,
-    subLabel: 'Garagem',
-  });
+  // 3. Banheiros - Só adiciona se banheiros > 0
+  if (banheiros > 0) {
+    features.push({
+      icon: <Bath size={compact ? 14 : 18} />,
+      label: `${banheiros} Banheiro${banheiros !== 1 ? 's' : ''}`,
+      subLabel: 'Banheiros',
+    });
+  }
+
+  // 4. Vagas - Só adiciona se vagas > 0
+  if (vagas > 0) {
+    features.push({
+      icon: <Car size={compact ? 14 : 18} />,
+      label: `${vagas} Vaga${vagas !== 1 ? 's' : ''}`,
+      subLabel: 'Garagem',
+    });
+  }
+
+  if (features.length === 0) return null;
 
   if (compact) {
     return (
