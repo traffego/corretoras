@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { ArrowLeft, MapPin, Tag, Award, Phone } from 'lucide-react';
 import { getSettings, supabase } from '@/lib/supabase';
 import PropertyGallery from '@/components/PropertyGallery';
+import FeatureIcons from '@/components/FeatureIcons';
 import AtributosImovel from '@/components/AtributosImovel';
 import ContactForm from '@/components/ContactForm';
 import WhatsAppLeadButton from '@/components/WhatsAppLeadButton';
@@ -154,7 +155,18 @@ export default async function ImovelDetailPage({ params }: ImovelDetailPageProps
           {/* Galeria de Fotos */}
           <PropertyGallery images={property.property_images || []} />
 
-          {/* Características do Imóvel */}
+          {/* Características Principais */}
+          <FeatureIcons
+            quartos={property.quartos ?? 0}
+            suites={property.suites ?? 0}
+            banheiros={property.banheiros ?? 0}
+            vagas={property.vagas ?? 0}
+            area_total={property.area_total}
+            area_construida={property.area_construida}
+            compact={false}
+          />
+
+          {/* Outros Diferenciais do Imóvel */}
           {property.atributos && Array.isArray(property.atributos) && property.atributos.length > 0 && (
             <AtributosImovel atributos={property.atributos} />
           )}

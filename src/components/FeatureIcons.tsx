@@ -21,41 +21,46 @@ export default function FeatureIcons({
 }: FeatureIconsProps) {
   const features = [];
 
-  // Adiciona os itens caso tenham valores válidos e maiores que zero
+  // 1. Área
+  let areaLabel = '';
+  let areaTipo = 'Área';
   if (area_construida && area_construida > 0) {
-    features.push({
-      icon: <Maximize2 size={compact ? 14 : 18} />,
-      label: `${area_construida}m² const.`,
-    });
+    areaLabel = `${area_construida}m²`;
+    areaTipo = 'Construída';
   } else if (area_total && area_total > 0) {
-    features.push({
-      icon: <Maximize2 size={compact ? 14 : 18} />,
-      label: `${area_total}m² total`,
-    });
+    areaLabel = `${area_total}m²`;
+    areaTipo = 'Total';
+  } else {
+    areaLabel = '— m²';
+    areaTipo = 'Área';
   }
+  
+  features.push({
+    icon: <Maximize2 size={compact ? 14 : 18} />,
+    label: areaLabel,
+    subLabel: areaTipo,
+  });
 
-  if (quartos > 0) {
-    features.push({
-      icon: <Bed size={compact ? 14 : 18} />,
-      label: `${quartos} quarto${quartos > 1 ? 's' : ''} ${
-        suites > 0 ? `(${suites} suíte${suites > 1 ? 's' : ''})` : ''
-      }`,
-    });
-  }
+  // 2. Quartos / Suítes
+  features.push({
+    icon: <Bed size={compact ? 14 : 18} />,
+    label: `${quartos} Quarto${quartos !== 1 ? 's' : ''}`,
+    subLabel: suites > 0 ? `${suites} Suíte${suites !== 1 ? 's' : ''}` : 'Quartos',
+  });
 
-  if (banheiros > 0) {
-    features.push({
-      icon: <Bath size={compact ? 14 : 18} />,
-      label: `${banheiros} banheiro${banheiros > 1 ? 's' : ''}`,
-    });
-  }
+  // 3. Banheiros
+  features.push({
+    icon: <Bath size={compact ? 14 : 18} />,
+    label: `${banheiros} Banheiro${banheiros !== 1 ? 's' : ''}`,
+    subLabel: 'Banheiros',
+  });
 
-  if (vagas > 0) {
-    features.push({
-      icon: <Car size={compact ? 14 : 18} />,
-      label: `${vagas} vaga${vagas > 1 ? 's' : ''}`,
-    });
-  }
+  // 4. Vagas
+  features.push({
+    icon: <Car size={compact ? 14 : 18} />,
+    label: `${vagas} Vaga${vagas !== 1 ? 's' : ''}`,
+    subLabel: 'Garagem',
+  });
 
   if (compact) {
     return (
@@ -79,10 +84,10 @@ export default function FeatureIcons({
           </div>
           <div className="flex flex-col">
             <span className="text-[10px] tracking-widest uppercase font-semibold text-stone-400">
-              {feat.label.split(' ')[1] || 'Espaço'}
+              {feat.subLabel}
             </span>
             <span className="text-sm font-semibold text-secondary leading-tight">
-              {feat.label.split(' ')[0]} {feat.label.includes('suíte') ? 'Suítes' : ''}
+              {feat.label}
             </span>
           </div>
         </div>
