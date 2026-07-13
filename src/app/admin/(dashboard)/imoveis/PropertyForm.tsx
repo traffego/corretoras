@@ -645,12 +645,12 @@ export default function PropertyForm({
 
                 {/* Grid de Fotos com botões na base da miniatura */}
                 {images.length > 0 && (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 gap-5 w-[90%] mx-auto">
                     {images.map((img, idx) => (
                       <div
                         key={img.url}
                         className="relative rounded-xl overflow-hidden border border-stone-200 bg-stone-100"
-                        style={{ height: '220px' }}
+                        style={{ height: '320px' }}
                       >
                         {/* Imagem */}
                         <Image src={img.url} alt={`Foto ${idx + 1}`} fill className="object-cover" />
