@@ -643,61 +643,71 @@ export default function PropertyForm({
                   </label>
                 </div>
 
-                {/* Grid de Fotos Grande */}
+                {/* Lista de Fotos com botões ao lado */}
                 {images.length > 0 && (
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  <div className="space-y-3">
                     {images.map((img, idx) => (
                       <div
                         key={img.url}
-                        className="relative group rounded-xl overflow-hidden border border-stone-200 bg-stone-100 aspect-video"
+                        className="flex items-center gap-4 bg-stone-50 border border-stone-200/70 rounded-2xl p-3"
                       >
-                        <Image src={img.url} alt={`Foto ${idx + 1}`} fill className="object-cover" />
+                        {/* Miniatura grande clicável */}
+                        <div
+                          className="relative flex-shrink-0 w-48 h-32 rounded-xl overflow-hidden border border-stone-200 bg-stone-100 cursor-pointer hover:opacity-90 transition"
+                          onClick={() => setLightboxIdx(idx)}
+                          title="Clique para ampliar"
+                        >
+                          <Image src={img.url} alt={`Foto ${idx + 1}`} fill className="object-cover" />
+                          {idx === 0 && (
+                            <span className="absolute top-2 left-2 text-[9px] bg-primary text-white px-2 py-0.5 rounded font-bold uppercase tracking-wide z-10">
+                              Capa
+                            </span>
+                          )}
+                        </div>
 
-                        {/* Badge capa */}
-                        {idx === 0 && (
-                          <span className="absolute top-2 left-2 text-[9px] bg-primary text-white px-2 py-0.5 rounded font-bold uppercase tracking-wide z-10">
-                            Capa
-                          </span>
-                        )}
+                        {/* Info + Botões ao lado */}
+                        <div className="flex flex-1 items-center justify-between gap-3 min-w-0">
+                          <div className="flex flex-col gap-1 min-w-0">
+                            <span className="text-xs font-bold text-stone-500 uppercase tracking-wider">Foto {idx + 1}</span>
+                            <span className="text-[10px] text-stone-400 truncate">{img.url.split('/').pop()}</span>
+                          </div>
 
-                        {/* Overlay de ações */}
-                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-3 z-10 p-4">
-                          {/* Zoom */}
-                          <button
-                            type="button"
-                            onClick={() => setLightboxIdx(idx)}
-                            className="flex items-center gap-1.5 bg-white/20 hover:bg-white/30 backdrop-blur text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition cursor-pointer"
-                          >
-                            <ZoomIn size={13} /> Ver
-                          </button>
-
-                          {/* Ações reordenação / remoção */}
-                          <div className="flex gap-1.5">
+                          {/* Ações */}
+                          <div className="flex items-center gap-2 flex-shrink-0">
+                            <button
+                              type="button"
+                              onClick={() => setLightboxIdx(idx)}
+                              className="flex items-center gap-1.5 bg-stone-100 hover:bg-stone-200 text-stone-600 text-xs font-semibold px-3 py-2 rounded-xl transition cursor-pointer border border-stone-200"
+                              title="Ver foto ampliada"
+                            >
+                              <ZoomIn size={14} />
+                              <span>Ver</span>
+                            </button>
                             <button
                               type="button"
                               onClick={() => handleMoveImage(idx, 'up')}
                               disabled={idx === 0}
-                              className="p-1.5 bg-white/20 hover:bg-white/30 backdrop-blur rounded-lg text-white disabled:opacity-30 cursor-pointer"
-                              title="Mover para esquerda"
+                              className="p-2 bg-stone-100 hover:bg-stone-200 border border-stone-200 rounded-xl text-stone-500 disabled:opacity-30 cursor-pointer transition"
+                              title="Mover para cima"
                             >
-                              <ArrowUp size={12} />
+                              <ArrowUp size={14} />
                             </button>
                             <button
                               type="button"
                               onClick={() => handleMoveImage(idx, 'down')}
                               disabled={idx === images.length - 1}
-                              className="p-1.5 bg-white/20 hover:bg-white/30 backdrop-blur rounded-lg text-white disabled:opacity-30 cursor-pointer"
-                              title="Mover para direita"
+                              className="p-2 bg-stone-100 hover:bg-stone-200 border border-stone-200 rounded-xl text-stone-500 disabled:opacity-30 cursor-pointer transition"
+                              title="Mover para baixo"
                             >
-                              <ArrowDown size={12} />
+                              <ArrowDown size={14} />
                             </button>
                             <button
                               type="button"
                               onClick={() => handleRemoveImage(idx)}
-                              className="p-1.5 bg-rose-500/80 hover:bg-rose-600/80 backdrop-blur rounded-lg text-white cursor-pointer"
+                              className="p-2 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-xl text-rose-500 cursor-pointer transition"
                               title="Remover foto"
                             >
-                              <Trash2 size={12} />
+                              <Trash2 size={14} />
                             </button>
                           </div>
                         </div>
