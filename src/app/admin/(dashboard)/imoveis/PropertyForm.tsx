@@ -649,11 +649,11 @@ export default function PropertyForm({
                     {images.map((img, idx) => (
                       <div
                         key={img.url}
-                        className="flex items-center gap-4 bg-stone-50 border border-stone-200/70 rounded-2xl p-3"
+                        className="flex items-center gap-3 bg-stone-50 border border-stone-200/70 rounded-2xl p-3"
                       >
-                        {/* Miniatura grande clicável */}
+                        {/* Miniatura clicável */}
                         <div
-                          className="relative flex-shrink-0 w-48 h-32 rounded-xl overflow-hidden border border-stone-200 bg-stone-100 cursor-pointer hover:opacity-90 transition"
+                          className="relative flex-shrink-0 w-44 h-28 rounded-xl overflow-hidden border border-stone-200 bg-stone-100 cursor-pointer hover:opacity-90 transition"
                           onClick={() => setLightboxIdx(idx)}
                           title="Clique para ampliar"
                         >
@@ -665,51 +665,48 @@ export default function PropertyForm({
                           )}
                         </div>
 
-                        {/* Info + Botões ao lado */}
-                        <div className="flex flex-1 items-center justify-between gap-3 min-w-0">
-                          <div className="flex flex-col gap-1 min-w-0">
-                            <span className="text-xs font-bold text-stone-500 uppercase tracking-wider">Foto {idx + 1}</span>
-                            <span className="text-[10px] text-stone-400 truncate">{img.url.split('/').pop()}</span>
-                          </div>
+                        {/* Label */}
+                        <span className="flex-1 text-xs font-bold text-stone-400 uppercase tracking-wider">
+                          Foto {idx + 1}
+                        </span>
 
-                          {/* Ações */}
-                          <div className="flex items-center gap-2 flex-shrink-0">
-                            <button
-                              type="button"
-                              onClick={() => setLightboxIdx(idx)}
-                              className="flex items-center gap-1.5 bg-stone-100 hover:bg-stone-200 text-stone-600 text-xs font-semibold px-3 py-2 rounded-xl transition cursor-pointer border border-stone-200"
-                              title="Ver foto ampliada"
-                            >
-                              <ZoomIn size={14} />
-                              <span>Ver</span>
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => handleMoveImage(idx, 'up')}
-                              disabled={idx === 0}
-                              className="p-2 bg-stone-100 hover:bg-stone-200 border border-stone-200 rounded-xl text-stone-500 disabled:opacity-30 cursor-pointer transition"
-                              title="Mover para cima"
-                            >
-                              <ArrowUp size={14} />
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => handleMoveImage(idx, 'down')}
-                              disabled={idx === images.length - 1}
-                              className="p-2 bg-stone-100 hover:bg-stone-200 border border-stone-200 rounded-xl text-stone-500 disabled:opacity-30 cursor-pointer transition"
-                              title="Mover para baixo"
-                            >
-                              <ArrowDown size={14} />
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => handleRemoveImage(idx)}
-                              className="p-2 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-xl text-rose-500 cursor-pointer transition"
-                              title="Remover foto"
-                            >
-                              <Trash2 size={14} />
-                            </button>
-                          </div>
+                        {/* Botões — sempre visíveis, sem quebra */}
+                        <div className="flex items-center gap-2 flex-shrink-0 flex-nowrap">
+                          <button
+                            type="button"
+                            onClick={() => setLightboxIdx(idx)}
+                            className="flex items-center gap-1.5 bg-stone-100 hover:bg-stone-200 text-stone-600 text-xs font-semibold px-3 py-2 rounded-xl transition cursor-pointer border border-stone-200 whitespace-nowrap"
+                            title="Ver foto ampliada"
+                          >
+                            <ZoomIn size={14} />
+                            <span>Ver</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleMoveImage(idx, 'up')}
+                            disabled={idx === 0}
+                            className="p-2 bg-stone-100 hover:bg-stone-200 border border-stone-200 rounded-xl text-stone-500 disabled:opacity-30 cursor-pointer transition"
+                            title="Mover para cima"
+                          >
+                            <ArrowUp size={14} />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleMoveImage(idx, 'down')}
+                            disabled={idx === images.length - 1}
+                            className="p-2 bg-stone-100 hover:bg-stone-200 border border-stone-200 rounded-xl text-stone-500 disabled:opacity-30 cursor-pointer transition"
+                            title="Mover para baixo"
+                          >
+                            <ArrowDown size={14} />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveImage(idx)}
+                            className="p-2 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-xl text-rose-500 cursor-pointer transition"
+                            title="Remover foto"
+                          >
+                            <Trash2 size={14} />
+                          </button>
                         </div>
                       </div>
                     ))}
