@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { applyWatermark, type WatermarkSettings } from '@/lib/watermark';
-import { ArrowLeft, Save, Trash2, ArrowUp, ArrowDown, Plus, Loader2, Image as ImageIcon, X, ChevronDown } from 'lucide-react';
+import { ArrowLeft, Save, Trash2, ArrowUp, ArrowDown, Plus, Loader2, Image as ImageIcon, X, ChevronDown, ZoomIn, ChevronLeft, ChevronRight } from 'lucide-react';
 import Image from 'next/image';
 import { ICONES_ATRIBUTO, getIconeComponente, type Atributo } from '@/components/AtributosImovel';
 
@@ -81,6 +81,7 @@ export default function PropertyForm({
 
   // Galeria recolhida no modo edição
   const [galeriaAberta, setGaleriaAberta] = useState(!isEditMode);
+  const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
 
   // Images state
   const [images, setImages] = useState<PropertyImage[]>(initialImages);
@@ -642,61 +643,130 @@ export default function PropertyForm({
                   </label>
                 </div>
 
-                {/* Lista e Reordenação de Fotos */}
-                <div className="space-y-3">
-                  {images.map((img, idx) => (
-                    <div
-                      key={img.url}
-                      className="flex items-center justify-between bg-stone-50 border border-stone-200/50 p-2.5 rounded-xl gap-3"
-                    >
-                      <div className="flex items-center space-x-3">
-                        <div className="relative w-14 h-10 rounded-lg overflow-hidden border border-stone-200 bg-stone-100 flex-shrink-0">
-                          <Image src={img.url} alt={`Preview ${idx}`} fill className="object-cover" />
-                        </div>
-                        <div className="flex flex-col">
-                          <span className="text-[10px] text-stone-400 font-bold uppercase">Foto {idx + 1}</span>
-                          {idx === 0 && (
-                            <span className="text-[9px] bg-primary/10 text-primary px-1.5 py-0.5 rounded font-semibold w-max mt-0.5 uppercase tracking-wide">
-                              Capa
-                            </span>
-                          )}
-                        </div>
-                      </div>
+                {/* Grid de Fotos Grande */}
+                {images.length > 0 && (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    {images.map((img, idx) => (
+                      <div
+                        key={img.url}
+                        className="relative group rounded-xl overflow-hidden border border-stone-200 bg-stone-100 aspect-video"
+                      >
+                        <Image src={img.url} alt={`Foto ${idx + 1}`} fill className="object-cover" />
 
-                      <div className="flex items-center space-x-1.5">
-                        <button
-                          type="button"
-                          onClick={() => handleMoveImage(idx, 'up')}
-                          disabled={idx === 0}
-                          className="p-1.5 bg-white border border-stone-200 rounded text-stone-400 hover:text-secondary disabled:opacity-30 cursor-pointer"
-                          title="Mover para cima"
-                        >
-                          <ArrowUp size={12} />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleMoveImage(idx, 'down')}
-                          disabled={idx === images.length - 1}
-                          className="p-1.5 bg-white border border-stone-200 rounded text-stone-400 hover:text-secondary disabled:opacity-30 cursor-pointer"
-                          title="Mover para baixo"
-                        >
-                          <ArrowDown size={12} />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveImage(idx)}
-                          className="p-1.5 bg-white border border-stone-200 hover:border-rose-100 rounded text-stone-400 hover:text-rose-500 cursor-pointer"
-                          title="Remover"
-                        >
-                          <Trash2 size={12} />
-                        </button>
+                        {/* Badge capa */}
+                        {idx === 0 && (
+                          <span className="absolute top-2 left-2 text-[9px] bg-primary text-white px-2 py-0.5 rounded font-bold uppercase tracking-wide z-10">
+                            Capa
+                          </span>
+                        )}
+
+                        {/* Overlay de ações */}
+                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2 z-10">
+                          {/* Zoom */}
+                          <button
+                            type="button"
+                            onClick={() => setLightboxIdx(idx)}
+                            className="flex items-center gap-1.5 bg-white/20 hover:bg-white/30 backdrop-blur text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition cursor-pointer"
+                          >
+                            <ZoomIn size={13} /> Ver
+                          </button>
+
+                          {/* Ações reordenação / remoção */}
+                          <div className="flex gap-1.5">
+                            <button
+                              type="button"
+                              onClick={() => handleMoveImage(idx, 'up')}
+                              disabled={idx === 0}
+                              className="p-1.5 bg-white/20 hover:bg-white/30 backdrop-blur rounded-lg text-white disabled:opacity-30 cursor-pointer"
+                              title="Mover para esquerda"
+                            >
+                              <ArrowUp size={12} />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleMoveImage(idx, 'down')}
+                              disabled={idx === images.length - 1}
+                              className="p-1.5 bg-white/20 hover:bg-white/30 backdrop-blur rounded-lg text-white disabled:opacity-30 cursor-pointer"
+                              title="Mover para direita"
+                            >
+                              <ArrowDown size={12} />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveImage(idx)}
+                              className="p-1.5 bg-rose-500/80 hover:bg-rose-600/80 backdrop-blur rounded-lg text-white cursor-pointer"
+                              title="Remover foto"
+                            >
+                              <Trash2 size={12} />
+                            </button>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
           </div>
+
+          {/* Lightbox de Zoom */}
+          {lightboxIdx !== null && (
+            <div
+              className="fixed inset-0 z-[99999] bg-black/90 flex items-center justify-center"
+              onClick={() => setLightboxIdx(null)}
+            >
+              {/* Fechar */}
+              <button
+                type="button"
+                onClick={() => setLightboxIdx(null)}
+                className="absolute top-4 right-4 p-2 bg-white/10 hover:bg-white/20 rounded-xl text-white transition cursor-pointer z-10"
+              >
+                <X size={22} />
+              </button>
+
+              {/* Anterior */}
+              {lightboxIdx > 0 && (
+                <button
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); setLightboxIdx(i => i! - 1); }}
+                  className="absolute left-4 p-2 bg-white/10 hover:bg-white/20 rounded-xl text-white transition cursor-pointer z-10"
+                >
+                  <ChevronLeft size={28} />
+                </button>
+              )}
+
+              {/* Imagem */}
+              <div
+                className="relative max-w-5xl w-full max-h-[85vh] aspect-video mx-8"
+                onClick={e => e.stopPropagation()}
+              >
+                <Image
+                  src={images[lightboxIdx].url}
+                  alt={`Foto ${lightboxIdx + 1}`}
+                  fill
+                  className="object-contain"
+                  sizes="100vw"
+                  priority
+                />
+              </div>
+
+              {/* Próxima */}
+              {lightboxIdx < images.length - 1 && (
+                <button
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); setLightboxIdx(i => i! + 1); }}
+                  className="absolute right-4 p-2 bg-white/10 hover:bg-white/20 rounded-xl text-white transition cursor-pointer z-10"
+                >
+                  <ChevronRight size={28} />
+                </button>
+              )}
+
+              {/* Contador */}
+              <span className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/70 text-xs font-semibold">
+                {lightboxIdx + 1} / {images.length}
+              </span>
+            </div>
+          )}
         </div>
       </div>
 
