@@ -121,33 +121,11 @@ export default function PropertyCard({ property }: PropertyCardProps) {
         </div>
 
         {/* Ícones de Características */}
-        <div className="border-t border-stone-100 pt-4 space-y-3">
+        <div className="border-t border-stone-100 pt-4">
           <FeatureIcons
-            quartos={property.quartos ?? 0}
-            suites={property.suites ?? 0}
-            banheiros={property.banheiros ?? 0}
-            vagas={property.vagas ?? 0}
-            area_total={property.area_total}
-            area_construida={property.area_construida}
+            atributos={property.atributos}
             compact
           />
-
-          {/* Diferenciais Customizados (Badges) */}
-          {property.atributos && Array.isArray(property.atributos) && property.atributos.length > 0 && (
-            <div className="flex flex-wrap gap-1.5 pt-1">
-              {property.atributos
-                .filter((attr: any) => {
-                  if (!attr || !attr.nome) return false;
-                  const nome = attr.nome.toLowerCase();
-                  return !['quarto', 'quartos', 'suite', 'suites', 'suíte', 'suítes', 'banheiro', 'banheiros', 'vaga', 'vagas', 'garagem', 'area', 'área'].some(p => nome.includes(p));
-                })
-                .map((attr: any, idx: number) => (
-                  <span key={idx} className="text-[9px] bg-stone-100 text-stone-600 px-2 py-0.5 rounded-md font-medium uppercase tracking-wider">
-                    {attr.nome}: {attr.descricao}
-                  </span>
-                ))}
-            </div>
-          )}
         </div>
 
         {/* Link / Ação */}

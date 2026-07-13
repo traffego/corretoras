@@ -155,26 +155,9 @@ export default async function ImovelDetailPage({ params }: ImovelDetailPageProps
           {/* Galeria de Fotos */}
           <PropertyGallery images={property.property_images || []} />
 
-          {/* Características Principais */}
-          <FeatureIcons
-            quartos={property.quartos ?? 0}
-            suites={property.suites ?? 0}
-            banheiros={property.banheiros ?? 0}
-            vagas={property.vagas ?? 0}
-            area_total={property.area_total}
-            area_construida={property.area_construida}
-            compact={false}
-          />
-
-          {/* Outros Diferenciais do Imóvel */}
+          {/* Características do Imóvel (Itens de Destaque) */}
           {property.atributos && Array.isArray(property.atributos) && property.atributos.length > 0 && (
-            <AtributosImovel
-              atributos={property.atributos.filter((attr: any) => {
-                if (!attr || !attr.nome) return false;
-                const nome = attr.nome.toLowerCase();
-                return !['quarto', 'quartos', 'suite', 'suites', 'suíte', 'suítes', 'banheiro', 'banheiros', 'vaga', 'vagas', 'garagem', 'area', 'área'].some(p => nome.includes(p));
-              })}
-            />
+            <AtributosImovel atributos={property.atributos} />
           )}
 
           {/* Descrição */}
