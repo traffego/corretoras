@@ -17,8 +17,8 @@ export default function FeatureIcons({
 }: FeatureIconsProps) {
   if (!atributos || atributos.length === 0) return null;
 
-  // No modo compacto (cards), limitar a 4 itens para manter o design do card limpo
-  const visibleAttrs = compact ? atributos.slice(0, 4) : atributos;
+  // No modo compacto (cards), limitar a 5 itens para manter o design do card limpo
+  const visibleAttrs = compact ? atributos.slice(0, 5) : atributos;
 
   if (compact) {
     return (
