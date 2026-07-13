@@ -56,8 +56,8 @@ export default function PropertyForm({
   // Form Fields
   const [titulo, setTitulo] = useState(initialProperty?.titulo || '');
   const [slug, setSlug] = useState(initialProperty?.slug || '');
-  const gerarCodigo = () => 'IMV-' + Math.random().toString(36).substring(2, 6).toUpperCase();
-  const [codigo, setCodigo] = useState(initialProperty?.codigo || (!isEditMode ? gerarCodigo() : ''));
+  const gerarCodigo = () => 'PA' + Math.floor(1000 + Math.random() * 9000);
+  const [codigo, setCodigo] = useState(initialProperty?.codigo || '');
   const [tipo, setTipo] = useState(initialProperty?.tipo || 'casa');
   const [finalidade, setFinalidade] = useState(initialProperty?.finalidade || 'venda');
   const [preco, setPreco] = useState(initialProperty?.preco || 0);
@@ -100,6 +100,50 @@ export default function PropertyForm({
       setSlug(generatedSlug);
     }
   }, [titulo, isEditMode]);
+
+  // Buscar o próximo código sequencial PA no banco de dados
+  useEffect(() => {
+    if (!isEditMode && !initialProperty?.codigo) {
+      const obterNovoCodigo = async () => {
+        try {
+          const { data, error } = await supabase
+            .from('properties')
+            .select('codigo')
+            .ilike('codigo', 'PA%')
+            .order('codigo', { ascending: false })
+            .limit(100); // pegar lista para filtrar de forma robusta no JS
+
+          if (error) throw error;
+
+          let proximoNumero = 1;
+
+          if (data && data.length > 0) {
+            // Filtrar apenas códigos que tenham números após o "PA"
+            const codigosNumericos = data
+              .map(d => {
+                const match = d.codigo.match(/PA-?(\d+)/i);
+                return match ? parseInt(match[1], 10) : 0;
+              })
+              .filter(num => num > 0);
+
+            if (codigosNumericos.length > 0) {
+              const maxNumero = Math.max(...codigosNumericos);
+              proximoNumero = maxNumero + 1;
+            }
+          }
+
+          // Formatar com 3 dígitos (ex: PA001, PA012, PA123)
+          setCodigo(`PA${String(proximoNumero).padStart(3, '0')}`);
+        } catch (err) {
+          console.error('Erro ao gerar código sequencial:', err);
+          // Fallback caso dê algum erro de banco
+          const fallbackRand = 'PA' + Math.floor(100 + Math.random() * 900);
+          setCodigo(fallbackRand);
+        }
+      };
+      obterNovoCodigo();
+    }
+  }, [isEditMode, initialProperty]);
 
   // Carregar configurações de marca d'água
   useEffect(() => {

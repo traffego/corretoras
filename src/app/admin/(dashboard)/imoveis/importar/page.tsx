@@ -103,7 +103,7 @@ export default function ImportarImoveisPage() {
         const { error } = await supabase.from('properties').insert({
           titulo: row.titulo,
           slug: row.slug || row.titulo.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9\s-]/g, '').trim().replace(/\s+/g, '-'),
-          codigo: row.codigo || 'IMV-' + Math.random().toString(36).substring(2, 6).toUpperCase(),
+          codigo: row.codigo || 'PA' + Math.floor(100 + Math.random() * 900),
           tipo: row.tipo || 'casa',
           finalidade: row.finalidade || 'venda',
           preco: Number(row.preco) || 0,

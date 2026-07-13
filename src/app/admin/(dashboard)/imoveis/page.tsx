@@ -124,7 +124,7 @@ export default function AdminImoveisPage() {
         .order('ordem', { ascending: true });
 
       // Gerar novo código e slug
-      const novoCodigo = 'IMV-' + Math.random().toString(36).substring(2, 6).toUpperCase();
+      const novoCodigo = 'PA' + Math.floor(100 + Math.random() * 900); // fallback rápido, admin pode editar
       const novoTitulo = `${original.titulo} (Cópia)`;
       const novoSlug = original.slug + '-copia-' + Date.now();
 
