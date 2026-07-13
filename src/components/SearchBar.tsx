@@ -173,7 +173,7 @@ export default function SearchBar({ bairros, condominios }: SearchBarProps) {
               type="text"
               value={codigoBusca}
               onChange={(e) => setCodigoBusca(e.target.value.toUpperCase())}
-              placeholder="Ex: IMV-AB12"
+              placeholder="Ex: PA001"
               className="bg-transparent border-0 text-sm font-mono font-medium focus:ring-0 focus:outline-none text-stone-200 placeholder:text-stone-500 w-28"
             />
           </div>
