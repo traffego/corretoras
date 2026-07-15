@@ -13,7 +13,14 @@ const inter = Inter({
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSettings();
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL 
+    ? process.env.NEXT_PUBLIC_SITE_URL 
+    : process.env.VERCEL_URL 
+      ? `https://${process.env.VERCEL_URL}` 
+      : 'http://localhost:3000';
+
   return {
+    metadataBase: new URL(siteUrl),
     title: {
       default: settings.nome_corretora,
       template: `%s | ${settings.nome_corretora}`,
@@ -22,7 +29,7 @@ export async function generateMetadata(): Promise<Metadata> {
     openGraph: {
       title: settings.nome_corretora,
       description: settings.biografia_curta,
-      images: settings.foto_perfil_url ? [settings.foto_perfil_url] : [],
+      images: ['/compartilhar.png'],
     },
     robots: {
       index: true,

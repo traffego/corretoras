@@ -31,7 +31,8 @@ export async function generateMetadata({ params }: ImovelDetailPageProps): Promi
     };
   }
 
-  const mainImage = property.property_images?.[0]?.url || '';
+  const images = [...(property.property_images || [])].sort((a, b) => a.ordem - b.ordem);
+  const mainImage = images[0]?.url || '';
 
   return {
     title: `${property.titulo} - ${property.bairro}`,
