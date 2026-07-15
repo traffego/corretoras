@@ -44,6 +44,26 @@ interface PropertyFormProps {
   isEditMode?: boolean;
 }
 
+const padronizarTexto = (texto: string): string => {
+  if (!texto) return '';
+  return texto
+    .trim()
+    .replace(/\s+/g, ' ') // Substitui múltiplos espaços por um único
+    .split(' ')
+    .map(palavra => {
+      const conectores = ['de', 'do', 'da', 'dos', 'das', 'em', 'no', 'na', 'e'];
+      const palavraMinuscula = palavra.toLowerCase();
+      if (conectores.includes(palavraMinuscula)) {
+        return palavraMinuscula;
+      }
+      if (/^[IVXLCDMivxlcdm]+$/.test(palavra)) {
+        return palavra.toUpperCase();
+      }
+      return palavra.charAt(0).toUpperCase() + palavra.slice(1).toLowerCase();
+    })
+    .join(' ');
+};
+
 export default function PropertyForm({
   initialProperty,
   initialImages = [],
@@ -64,6 +84,11 @@ export default function PropertyForm({
   const [bairro, setBairro] = useState(initialProperty?.bairro || '');
   const [condominio, setCondominio] = useState(initialProperty?.condominio || '');
   const [cidade, setCidade] = useState(initialProperty?.cidade || 'Sinop');
+
+  // Autocomplete de bairro
+  const [bairrosCadastrados, setBairrosCadastrados] = useState<string[]>([]);
+  const [sugestoesFiltradas, setSugestoesFiltradas] = useState<string[]>([]);
+  const [mostrarSugestoes, setMostrarSugestoes] = useState(false);
   const [areaTotal, setAreaTotal] = useState(initialProperty?.area_total || 0);
   const [areaConstruida, setAreaConstruida] = useState(initialProperty?.area_construida || 0);
   const [quartos, setQuartos] = useState(initialProperty?.quartos || 0);
@@ -175,6 +200,42 @@ export default function PropertyForm({
     };
     fetchTipos();
   }, []);
+
+  // Carregar bairros cadastrados no banco na inicialização
+  useEffect(() => {
+    const fetchBairros = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('properties')
+          .select('bairro');
+
+        if (!error && data) {
+          const uniqueBairros = Array.from(
+            new Set(data.map(p => p.bairro).filter(Boolean))
+          ).sort((a, b) => a.localeCompare(b, 'pt-BR'));
+          setBairrosCadastrados(uniqueBairros);
+        }
+      } catch (err) {
+        console.error('Erro ao carregar bairros:', err);
+      }
+    };
+    fetchBairros();
+  }, []);
+
+  // Filtrar sugestões conforme digitação
+  useEffect(() => {
+    if (!bairro) {
+      setSugestoesFiltradas([]);
+      return;
+    }
+
+    const query = bairro.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+    const filtrados = bairrosCadastrados.filter(b => {
+      const bNormalizado = b.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+      return bNormalizado.includes(query);
+    });
+    setSugestoesFiltradas(filtrados);
+  }, [bairro, bairrosCadastrados]);
 
   const handleAddTipo = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -343,6 +404,13 @@ export default function PropertyForm({
     setErrorMsg('');
 
     try {
+      const bairroPadronizado = padronizarTexto(bairro);
+      const normalizarParaComparar = (str: string) =>
+        str.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+      const bairroCorreto = bairrosCadastrados.find(
+        b => normalizarParaComparar(b) === normalizarParaComparar(bairroPadronizado)
+      ) || bairroPadronizado;
+
       const propertyData = {
         slug,
         titulo,
@@ -350,7 +418,7 @@ export default function PropertyForm({
         tipo,
         finalidade,
         preco: Number(preco),
-        bairro,
+        bairro: bairroCorreto,
         condominio: condominio || null,
         cidade,
         area_total: areaTotal ? Number(areaTotal) : null,
@@ -589,7 +657,7 @@ export default function PropertyForm({
             </div>
 
             {/* Bairro */}
-            <div className="flex flex-col">
+            <div className="flex flex-col relative">
               <label className="text-[10px] tracking-widest uppercase font-semibold text-stone-400 mb-1.5">
                 Bairro *
               </label>
@@ -598,9 +666,39 @@ export default function PropertyForm({
                 required
                 value={bairro}
                 onChange={(e) => setBairro(e.target.value)}
+                onFocus={() => setMostrarSugestoes(true)}
+                onBlur={() => {
+                  if (bairro) {
+                    const padronizado = padronizarTexto(bairro);
+                    const normalizarParaComparar = (str: string) =>
+                      str.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+                    const correspondente = bairrosCadastrados.find(
+                      b => normalizarParaComparar(b) === normalizarParaComparar(padronizado)
+                    );
+                    setBairro(correspondente || padronizado);
+                  }
+                  setTimeout(() => setMostrarSugestoes(false), 200);
+                }}
                 placeholder="Ex: Jardim Itália"
+                autoComplete="off"
                 className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm text-secondary focus:ring-1 focus:ring-primary focus:outline-none"
               />
+              {mostrarSugestoes && sugestoesFiltradas.length > 0 && (
+                <ul className="absolute top-full left-0 right-0 z-50 mt-1 bg-white border border-stone-200 rounded-xl shadow-lg max-h-48 overflow-y-auto py-1">
+                  {sugestoesFiltradas.map((sugestao) => (
+                    <li
+                      key={sugestao}
+                      onMouseDown={() => {
+                        setBairro(sugestao);
+                        setMostrarSugestoes(false);
+                      }}
+                      className="px-4 py-2.5 text-sm text-secondary hover:bg-stone-50 hover:text-primary cursor-pointer transition-colors"
+                    >
+                      {sugestao}
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
 
             {/* Condomínio */}
