@@ -89,6 +89,7 @@ export default function PropertyForm({
   const [bairrosCadastrados, setBairrosCadastrados] = useState<string[]>([]);
   const [sugestoesFiltradas, setSugestoesFiltradas] = useState<string[]>([]);
   const [mostrarSugestoes, setMostrarSugestoes] = useState(false);
+  const [forcarMostrarTodos, setForcarMostrarTodos] = useState(false);
   const [areaTotal, setAreaTotal] = useState(initialProperty?.area_total || 0);
   const [areaConstruida, setAreaConstruida] = useState(initialProperty?.area_construida || 0);
   const [quartos, setQuartos] = useState(initialProperty?.quartos || 0);
@@ -225,7 +226,7 @@ export default function PropertyForm({
   // Filtrar sugestões conforme digitação
   useEffect(() => {
     if (!bairro) {
-      setSugestoesFiltradas([]);
+      setSugestoesFiltradas(bairrosCadastrados);
       return;
     }
 
@@ -661,36 +662,58 @@ export default function PropertyForm({
               <label className="text-[10px] tracking-widest uppercase font-semibold text-stone-400 mb-1.5">
                 Bairro *
               </label>
-              <input
-                type="text"
-                required
-                value={bairro}
-                onChange={(e) => setBairro(e.target.value)}
-                onFocus={() => setMostrarSugestoes(true)}
-                onBlur={() => {
-                  if (bairro) {
-                    const padronizado = padronizarTexto(bairro);
-                    const normalizarParaComparar = (str: string) =>
-                      str.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
-                    const correspondente = bairrosCadastrados.find(
-                      b => normalizarParaComparar(b) === normalizarParaComparar(padronizado)
-                    );
-                    setBairro(correspondente || padronizado);
-                  }
-                  setTimeout(() => setMostrarSugestoes(false), 200);
-                }}
-                placeholder="Ex: Jardim Itália"
-                autoComplete="off"
-                className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm text-secondary focus:ring-1 focus:ring-primary focus:outline-none"
-              />
-              {mostrarSugestoes && sugestoesFiltradas.length > 0 && (
+              <div className="relative flex items-center">
+                <input
+                  type="text"
+                  required
+                  value={bairro}
+                  onChange={(e) => {
+                    setBairro(e.target.value);
+                    setForcarMostrarTodos(false);
+                  }}
+                  onFocus={() => setMostrarSugestoes(true)}
+                  onBlur={() => {
+                    if (bairro) {
+                      const padronizado = padronizarTexto(bairro);
+                      const normalizarParaComparar = (str: string) =>
+                        str.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+                      const correspondente = bairrosCadastrados.find(
+                        b => normalizarParaComparar(b) === normalizarParaComparar(padronizado)
+                      );
+                      setBairro(correspondente || padronizado);
+                    }
+                    setTimeout(() => {
+                      setMostrarSugestoes(false);
+                      setForcarMostrarTodos(false);
+                    }, 200);
+                  }}
+                  placeholder="Ex: Jardim Itália"
+                  autoComplete="off"
+                  className="w-full bg-stone-50 border border-stone-200 rounded-xl pl-4 pr-10 py-3 text-sm text-secondary focus:ring-1 focus:ring-primary focus:outline-none"
+                />
+                <button
+                  type="button"
+                  onMouseDown={(e) => {
+                    // Prevenir blur imediato do input
+                    e.preventDefault();
+                    setForcarMostrarTodos(prev => !prev);
+                    setMostrarSugestoes(prev => !prev);
+                  }}
+                  className="absolute right-3 p-1 text-stone-400 hover:text-stone-600 transition cursor-pointer"
+                  title="Mostrar todos os bairros"
+                >
+                  <ChevronDown size={16} className={`transition-transform duration-200 ${mostrarSugestoes && forcarMostrarTodos ? 'rotate-180' : ''}`} />
+                </button>
+              </div>
+              {mostrarSugestoes && (forcarMostrarTodos ? bairrosCadastrados : sugestoesFiltradas).length > 0 && (
                 <ul className="absolute top-full left-0 right-0 z-50 mt-1 bg-white border border-stone-200 rounded-xl shadow-lg max-h-48 overflow-y-auto py-1">
-                  {sugestoesFiltradas.map((sugestao) => (
+                  {(forcarMostrarTodos ? bairrosCadastrados : sugestoesFiltradas).map((sugestao) => (
                     <li
                       key={sugestao}
                       onMouseDown={() => {
                         setBairro(sugestao);
                         setMostrarSugestoes(false);
+                        setForcarMostrarTodos(false);
                       }}
                       className="px-4 py-2.5 text-sm text-secondary hover:bg-stone-50 hover:text-primary cursor-pointer transition-colors"
                     >
