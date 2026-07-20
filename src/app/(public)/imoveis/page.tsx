@@ -35,11 +35,11 @@ export default async function ImoveisPage({ searchParams }: ImoveisPageProps) {
 
   const bairros = Array.from(
     new Set((allActiveProps || []).map((p) => p.bairro).filter(Boolean))
-  ) as string[];
+  ).sort((a, b) => a.localeCompare(b, 'pt-BR')) as string[];
 
   const condominios = Array.from(
     new Set((allActiveProps || []).map((p) => p.condominio).filter(Boolean))
-  ) as string[];
+  ).sort((a, b) => a.localeCompare(b, 'pt-BR')) as string[];
 
   // 2. Construir a query filtrada de imóveis
   let query = supabase

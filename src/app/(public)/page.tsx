@@ -63,14 +63,14 @@ export default async function Home() {
           'Transparência e discrição em negociações',
         ];
 
-  // Extrair bairros e condomínios únicos para o SearchBar
+  // Extrair bairros e condomínios únicos para o SearchBar em ordem alfabética
   const bairros = Array.from(
     new Set(properties.map((p) => p.bairro).filter(Boolean))
-  ) as string[];
+  ).sort((a, b) => a.localeCompare(b, 'pt-BR')) as string[];
 
   const condominios = Array.from(
     new Set(properties.map((p) => p.condominio).filter(Boolean))
-  ) as string[];
+  ).sort((a, b) => a.localeCompare(b, 'pt-BR')) as string[];
 
   const formatWhatsAppNumber = (num: string) => {
     const cleanNum = num.replace(/\D/g, '');
