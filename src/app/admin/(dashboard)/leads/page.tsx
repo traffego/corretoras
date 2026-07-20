@@ -31,11 +31,20 @@ export default function AdminLeadsPage() {
     try {
       const { data, error } = await supabase
         .from('leads')
-        .select('*')
+        .select('*, properties(codigo, titulo)')
         .order('created_at', { ascending: false });
 
-      if (error) setErrorMsg('Erro ao buscar leads: ' + error.message);
-      else setLeads((data as Lead[]) || []);
+      if (error) {
+        setErrorMsg('Erro ao buscar leads: ' + error.message);
+      } else {
+        const mappedLeads = (data || []).map((lead: any) => ({
+          ...lead,
+          interesse: lead.property_id ? 'imovel' : 'geral',
+          imovel_codigo: lead.properties?.codigo || null,
+          imovel_titulo: lead.properties?.titulo || null,
+        })) as Lead[];
+        setLeads(mappedLeads);
+      }
     } catch (err) {
       setErrorMsg('Erro de conexão.');
     } finally {

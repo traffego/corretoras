@@ -1,27 +1,32 @@
 import { NextResponse } from 'next/server';
-import { supabase, getSettings } from '@/lib/supabase';
+import { getSettings } from '@/lib/supabase';
+import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
 
 export async function POST(request: Request) {
   try {
     const { nome, email, telefone, mensagem, propertyId } = await request.json();
 
-    if (!nome || !email || !mensagem) {
+    if (!nome) {
       return NextResponse.json(
-        { success: false, error: 'Campos obrigatórios ausentes.' },
+        { success: false, error: 'O nome é obrigatório.' },
         { status: 400 }
       );
     }
 
-    // 1. Salvar o lead no banco de dados Supabase
-    const { data: lead, error: dbError } = await supabase
+    // 1. Salvar o lead no banco de dados Supabase usando o cliente admin (ignora RLS)
+    const { data: lead, error: dbError } = await supabaseAdmin
       .from('leads')
       .insert([
         {
           nome,
-          email,
+          email: email || 'contato@whatsapp.com', // Se vazio, usa placeholder para satisfazer NOT NULL
           telefone,
-          mensagem,
+          mensagem: mensagem || 'Contato via WhatsApp',
           property_id: propertyId || null,
         },
       ])
@@ -49,7 +54,7 @@ export async function POST(request: Request) {
         let propertyInfoHtml = '';
         if (propertyId) {
           // Opcional: Buscar informações do imóvel para enriquecer o e-mail
-          const { data: prop } = await supabase
+          const { data: prop } = await supabaseAdmin
             .from('properties')
             .select('titulo, codigo')
             .eq('id', propertyId)

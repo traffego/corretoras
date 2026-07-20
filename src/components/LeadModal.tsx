@@ -88,18 +88,21 @@ export default function LeadModal({
       : 'Atendimento via WhatsApp central';
 
     try {
-      await supabase.from('leads').insert({
-        nome: nome.trim(),
-        telefone: telefone.trim(),
-        interesse: context.tipo,
-        imovel_id: context.imovelId || null,
-        imovel_codigo: context.imovelCodigo || null,
-        imovel_titulo: context.imovelTitulo || null,
-        origem: typeof window !== 'undefined' ? window.location.pathname : null,
-        mensagem: mensagemLead,
+      await fetch('/api/leads', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          nome: nome.trim(),
+          telefone: telefone.trim(),
+          mensagem: `${mensagemLead}\nInteresse: ${context.tipo === 'imovel' ? `Imóvel (Código: ${context.imovelCodigo}, Título: ${context.imovelTitulo})` : 'Geral'}\nOrigem: ${typeof window !== 'undefined' ? window.location.pathname : 'Não informado'}`,
+          propertyId: context.imovelId || null,
+          email: 'contato@whatsapp.com', // Placeholder para o banco de dados
+        }),
       });
-    } catch {
-      // Salvar falhou — continua mesmo assim para não bloquear o usuário
+    } catch (err) {
+      console.error('Erro ao salvar lead do WhatsApp:', err);
     }
 
     setSaving(false);
