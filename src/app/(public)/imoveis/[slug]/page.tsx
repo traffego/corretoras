@@ -10,6 +10,7 @@ import AtributosImovel from '@/components/AtributosImovel';
 import ContactForm from '@/components/ContactForm';
 import WhatsAppLeadButton from '@/components/WhatsAppLeadButton';
 import { Metadata } from 'next';
+import { headers } from 'next/headers';
 
 interface ImovelDetailPageProps {
   params: Promise<{ slug: string }>;
@@ -19,17 +20,48 @@ interface ImovelDetailPageProps {
 export async function generateMetadata({ params }: ImovelDetailPageProps): Promise<Metadata> {
   const { slug } = await params;
 
-  const { data: property } = await supabase
-    .from('properties')
-    .select('*, property_images(url, ordem)')
-    .eq('slug', slug)
-    .single();
+  const [propertyResult, settings] = await Promise.all([
+    supabase
+      .from('properties')
+      .select('*, property_images(url, ordem)')
+      .eq('slug', slug)
+      .single(),
+    getSettings()
+  ]);
+
+  const property = propertyResult.data;
 
   if (!property) {
     return {
       title: 'Imóvel não encontrado',
     };
   }
+
+  let siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+  if (!siteUrl) {
+    try {
+      const headersList = await headers();
+      const host = headersList.get('host');
+      if (host) {
+        const protocol = host.includes('localhost') || host.includes('127.0.0.1') ? 'http' : 'https';
+        siteUrl = `${protocol}://${host}`;
+      }
+    } catch {
+      // Ignorar
+    }
+  }
+
+  if (!siteUrl) {
+    siteUrl = process.env.VERCEL_URL 
+      ? `https://${process.env.VERCEL_URL}` 
+      : 'http://localhost:3000';
+  }
+
+  if (siteUrl && !siteUrl.startsWith('http://') && !siteUrl.startsWith('https://')) {
+    siteUrl = `https://${siteUrl}`;
+  }
+
+  const pageUrl = `${siteUrl}/imoveis/${slug}`;
 
   const images = [...(property.property_images || [])].sort((a, b) => a.ordem - b.ordem);
   const mainImage = images[0]?.url || '';
@@ -42,6 +74,10 @@ export async function generateMetadata({ params }: ImovelDetailPageProps): Promi
     openGraph: {
       title: `${property.titulo} - ${property.bairro}`,
       description: property.descricao ? property.descricao.slice(0, 160) : '',
+      url: pageUrl,
+      siteName: settings.nome_corretora,
+      locale: 'pt_BR',
+      type: 'website',
       ...(ogImages ? { images: ogImages } : {}),
     },
   };

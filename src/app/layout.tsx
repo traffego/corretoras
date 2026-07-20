@@ -50,6 +50,10 @@ export async function generateMetadata(): Promise<Metadata> {
     openGraph: {
       title: settings.nome_corretora,
       description: settings.biografia_curta,
+      url: siteUrl,
+      siteName: settings.nome_corretora,
+      locale: 'pt_BR',
+      type: 'website',
       images: [
         {
           url: '/compartilhar.png',
