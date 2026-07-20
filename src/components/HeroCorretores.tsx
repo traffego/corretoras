@@ -212,7 +212,7 @@ export default function HeroCorretores({
           <div className="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-sm border border-primary/40 px-5 py-2.5 rounded-full shadow-lg">
             <Award size={15} className="text-primary" />
             <span className="text-[11px] tracking-[0.2em] uppercase font-semibold text-stone-200">
-              Atendimento Premium • {getCreciString()}
+              {getCreciString()}
             </span>
           </div>
         </div>

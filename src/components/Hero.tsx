@@ -36,7 +36,7 @@ export default function Hero({ settings, bairros, condominios, corretores = [] }
           <div className="inline-flex items-center space-x-2 bg-white/80 border border-primary/20 px-4 py-2 rounded-full shadow-sm">
             <Award size={16} className="text-primary" />
             <span className="text-[11px] tracking-wider uppercase font-semibold text-secondary">
-              Atendimento Premium • {getCreciString()}
+              {getCreciString()}
             </span>
           </div>
 
