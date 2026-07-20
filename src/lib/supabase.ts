@@ -29,7 +29,7 @@ export const FALLBACK_SETTINGS: SystemSettings = {
   cor_secundaria: '#1c1917', // Cinza Escuro/Preto pedra
   nome_corretora: 'Patrícia e Allana (Imóveis Selecionados)',
   creci: 'CRECI 12345-F',
-  biografia_curta: 'Especialistas em imóveis selecionados de alto padrão.',
+  biografia_curta: 'Imóveis selecionados em Tangará da Serra',
   biografia_longa: 'Patrícia e Allana são especialistas em intermediação imobiliária de alto padrão, dedicadas a selecionar os melhores imóveis e condomínios fechados. Com foco em atendimento de excelência, transparência e curadoria rigorosa, elas ajudam você a encontrar a propriedade perfeita para seu estilo de vida.',
   foto_perfil_url: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80',
   logo_url: '/logo.png',
