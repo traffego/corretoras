@@ -34,13 +34,15 @@ export async function generateMetadata({ params }: ImovelDetailPageProps): Promi
   const images = [...(property.property_images || [])].sort((a, b) => a.ordem - b.ordem);
   const mainImage = images[0]?.url || '';
 
+  const ogImages = mainImage ? [{ url: mainImage }] : undefined;
+
   return {
     title: `${property.titulo} - ${property.bairro}`,
     description: property.descricao ? property.descricao.slice(0, 160) : '',
     openGraph: {
       title: `${property.titulo} - ${property.bairro}`,
       description: property.descricao ? property.descricao.slice(0, 160) : '',
-      images: mainImage ? [{ url: mainImage }] : [],
+      ...(ogImages ? { images: ogImages } : {}),
     },
   };
 }
