@@ -90,6 +90,12 @@ export default function PropertyForm({
   const [sugestoesFiltradas, setSugestoesFiltradas] = useState<string[]>([]);
   const [mostrarSugestoes, setMostrarSugestoes] = useState(false);
   const [forcarMostrarTodos, setForcarMostrarTodos] = useState(false);
+
+  // Autocomplete de condomínio
+  const [condominiosCadastrados, setCondominiosCadastrados] = useState<string[]>([]);
+  const [sugestoesCondominiosFiltrados, setSugestoesCondominiosFiltrados] = useState<string[]>([]);
+  const [mostrarSugestoesCondominio, setMostrarSugestoesCondominio] = useState(false);
+  const [forcarMostrarTodosCondominios, setForcarMostrarTodosCondominios] = useState(false);
   const [areaTotal, setAreaTotal] = useState(initialProperty?.area_total || 0);
   const [areaConstruida, setAreaConstruida] = useState(initialProperty?.area_construida || 0);
   const [quartos, setQuartos] = useState(initialProperty?.quartos || 0);
@@ -202,28 +208,33 @@ export default function PropertyForm({
     fetchTipos();
   }, []);
 
-  // Carregar bairros cadastrados no banco na inicialização
+  // Carregar bairros e condomínios cadastrados no banco na inicialização
   useEffect(() => {
-    const fetchBairros = async () => {
+    const fetchDadosFiltros = async () => {
       try {
         const { data, error } = await supabase
           .from('properties')
-          .select('bairro');
+          .select('bairro, condominio');
 
         if (!error && data) {
           const uniqueBairros = Array.from(
             new Set(data.map(p => p.bairro).filter(Boolean))
           ).sort((a, b) => a.localeCompare(b, 'pt-BR'));
           setBairrosCadastrados(uniqueBairros);
+
+          const uniqueCondos = Array.from(
+            new Set(data.map(p => p.condominio).filter(Boolean))
+          ).sort((a, b) => a.localeCompare(b, 'pt-BR'));
+          setCondominiosCadastrados(uniqueCondos);
         }
       } catch (err) {
-        console.error('Erro ao carregar bairros:', err);
+        console.error('Erro ao carregar dados de filtros:', err);
       }
     };
-    fetchBairros();
+    fetchDadosFiltros();
   }, []);
 
-  // Filtrar sugestões conforme digitação
+  // Filtrar sugestões de bairros conforme digitação
   useEffect(() => {
     if (!bairro) {
       setSugestoesFiltradas(bairrosCadastrados);
@@ -237,6 +248,21 @@ export default function PropertyForm({
     });
     setSugestoesFiltradas(filtrados);
   }, [bairro, bairrosCadastrados]);
+
+  // Filtrar sugestões de condomínios conforme digitação
+  useEffect(() => {
+    if (!condominio) {
+      setSugestoesCondominiosFiltrados(condominiosCadastrados);
+      return;
+    }
+
+    const query = condominio.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+    const filtrados = condominiosCadastrados.filter(c => {
+      const cNormalizado = c.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+      return cNormalizado.includes(query);
+    });
+    setSugestoesCondominiosFiltrados(filtrados);
+  }, [condominio, condominiosCadastrados]);
 
   const handleAddTipo = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -405,12 +431,20 @@ export default function PropertyForm({
     setErrorMsg('');
 
     try {
-      const bairroPadronizado = padronizarTexto(bairro);
       const normalizarParaComparar = (str: string) =>
         str.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+
+      const bairroPadronizado = padronizarTexto(bairro);
       const bairroCorreto = bairrosCadastrados.find(
         b => normalizarParaComparar(b) === normalizarParaComparar(bairroPadronizado)
       ) || bairroPadronizado;
+
+      const condominioPadronizado = condominio ? padronizarTexto(condominio) : '';
+      const condominioCorreto = condominioPadronizado
+        ? condominiosCadastrados.find(
+            c => normalizarParaComparar(c) === normalizarParaComparar(condominioPadronizado)
+          ) || condominioPadronizado
+        : null;
 
       const propertyData = {
         slug,
@@ -420,7 +454,7 @@ export default function PropertyForm({
         finalidade,
         preco: Number(preco),
         bairro: bairroCorreto,
-        condominio: condominio || null,
+        condominio: condominioCorreto || null,
         cidade,
         area_total: areaTotal ? Number(areaTotal) : null,
         area_construida: areaConstruida ? Number(areaConstruida) : null,
@@ -725,17 +759,68 @@ export default function PropertyForm({
             </div>
 
             {/* Condomínio */}
-            <div className="flex flex-col">
+            <div className="flex flex-col relative">
               <label className="text-[10px] tracking-widest uppercase font-semibold text-stone-400 mb-1.5">
                 Condomínio Fechado (Opcional)
               </label>
-              <input
-                type="text"
-                value={condominio || ''}
-                onChange={(e) => setCondominio(e.target.value)}
-                placeholder="Ex: Mondrian Residencial"
-                className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm text-secondary focus:ring-1 focus:ring-primary focus:outline-none"
-              />
+              <div className="relative flex items-center">
+                <input
+                  type="text"
+                  value={condominio || ''}
+                  onChange={(e) => {
+                    setCondominio(e.target.value);
+                    setForcarMostrarTodosCondominios(false);
+                  }}
+                  onFocus={() => setMostrarSugestoesCondominio(true)}
+                  onBlur={() => {
+                    if (condominio) {
+                      const padronizado = padronizarTexto(condominio);
+                      const normalizarParaComparar = (str: string) =>
+                        str.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+                      const correspondente = condominiosCadastrados.find(
+                        c => normalizarParaComparar(c) === normalizarParaComparar(padronizado)
+                      );
+                      setCondominio(correspondente || padronizado);
+                    }
+                    setTimeout(() => {
+                      setMostrarSugestoesCondominio(false);
+                      setForcarMostrarTodosCondominios(false);
+                    }, 200);
+                  }}
+                  placeholder="Ex: Mondrian Residencial"
+                  autoComplete="off"
+                  className="w-full bg-stone-50 border border-stone-200 rounded-xl pl-4 pr-10 py-3 text-sm text-secondary focus:ring-1 focus:ring-primary focus:outline-none"
+                />
+                <button
+                  type="button"
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    setForcarMostrarTodosCondominios(prev => !prev);
+                    setMostrarSugestoesCondominio(prev => !prev);
+                  }}
+                  className="absolute right-3 p-1 text-stone-400 hover:text-stone-600 transition cursor-pointer"
+                  title="Mostrar todos os condomínios"
+                >
+                  <ChevronDown size={16} className={`transition-transform duration-200 ${mostrarSugestoesCondominio && forcarMostrarTodosCondominios ? 'rotate-180' : ''}`} />
+                </button>
+              </div>
+              {mostrarSugestoesCondominio && (forcarMostrarTodosCondominios ? condominiosCadastrados : sugestoesCondominiosFiltrados).length > 0 && (
+                <ul className="absolute top-full left-0 right-0 z-50 mt-1 bg-white border border-stone-200 rounded-xl shadow-lg max-h-48 overflow-y-auto py-1">
+                  {(forcarMostrarTodosCondominios ? condominiosCadastrados : sugestoesCondominiosFiltrados).map((sugestao) => (
+                    <li
+                      key={sugestao}
+                      onMouseDown={() => {
+                        setCondominio(sugestao);
+                        setMostrarSugestoesCondominio(false);
+                        setForcarMostrarTodosCondominios(false);
+                      }}
+                      className="px-4 py-2.5 text-sm text-secondary hover:bg-stone-50 hover:text-primary cursor-pointer transition-colors"
+                    >
+                      {sugestao}
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
 
             {/* Cidade */}
