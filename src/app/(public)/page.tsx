@@ -65,11 +65,11 @@ export default async function Home() {
 
   // Extrair bairros e condomínios únicos para o SearchBar em ordem alfabética
   const bairros = Array.from(
-    new Set(properties.map((p) => p.bairro).filter(Boolean))
+    new Set(properties.map((p) => p.bairro?.trim()).filter(Boolean))
   ).sort((a, b) => a.localeCompare(b, 'pt-BR')) as string[];
 
   const condominios = Array.from(
-    new Set(properties.map((p) => p.condominio).filter(Boolean))
+    new Set(properties.map((p) => p.condominio?.trim()).filter(Boolean))
   ).sort((a, b) => a.localeCompare(b, 'pt-BR')) as string[];
 
   const formatWhatsAppNumber = (num: string) => {

@@ -218,12 +218,12 @@ export default function PropertyForm({
 
         if (!error && data) {
           const uniqueBairros = Array.from(
-            new Set(data.map(p => p.bairro).filter(Boolean))
+            new Set(data.map(p => p.bairro?.trim()).filter(Boolean))
           ).sort((a, b) => a.localeCompare(b, 'pt-BR'));
           setBairrosCadastrados(uniqueBairros);
 
           const uniqueCondos = Array.from(
-            new Set(data.map(p => p.condominio).filter(Boolean))
+            new Set(data.map(p => p.condominio?.trim()).filter(Boolean))
           ).sort((a, b) => a.localeCompare(b, 'pt-BR'));
           setCondominiosCadastrados(uniqueCondos);
         }
@@ -435,15 +435,15 @@ export default function PropertyForm({
         str.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
 
       const bairroPadronizado = padronizarTexto(bairro);
-      const bairroCorreto = bairrosCadastrados.find(
+      const bairroCorreto = (bairrosCadastrados.find(
         b => normalizarParaComparar(b) === normalizarParaComparar(bairroPadronizado)
-      ) || bairroPadronizado;
+      ) || bairroPadronizado).trim();
 
       const condominioPadronizado = condominio ? padronizarTexto(condominio) : '';
       const condominioCorreto = condominioPadronizado
-        ? condominiosCadastrados.find(
+        ? (condominiosCadastrados.find(
             c => normalizarParaComparar(c) === normalizarParaComparar(condominioPadronizado)
-          ) || condominioPadronizado
+          ) || condominioPadronizado).trim()
         : null;
 
       const propertyData = {
