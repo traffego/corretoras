@@ -85,13 +85,10 @@ export default async function ImoveisPage({ searchParams }: ImoveisPageProps) {
   return (
     <div className="max-w-7xl mx-auto px-6 py-12">
       {/* Cabeçalho da Página */}
-      <div className="border-b border-stone-200/60 pb-8 mb-10 space-y-2 text-center sm:text-left">
+      <div className="border-b border-stone-200/60 pb-8 mb-10 text-center sm:text-left">
         <h1 className="font-serif text-3xl sm:text-4xl font-bold text-secondary">
           Catálogo de Imóveis
         </h1>
-        <p className="text-sm text-stone-500">
-          Explore nossa seleção rigorosa de imóveis de alto padrão e condomínios de luxo.
-        </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
